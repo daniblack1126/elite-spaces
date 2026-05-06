@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   await sendEmail(
     process.env.ADMIN_EMAIL ?? "",
     `New Elite Spaces application — ${firstName} ${lastName}`,
-    `New application:\n\nName: ${firstName} ${lastName}\nEmail: ${email}\nSource: ${source}\nTime: ${now.toISOString()}\n\nSet status to "approved" in the sheet to trigger the payment email.`,
+    `New application:\n\nName: ${firstName} ${lastName}\nEmail: ${email}\nHandle: ${handle || "—"}\nSource: ${source}\nTime: ${now.toISOString()}\n\nSet status to "approved" in the sheet to trigger the payment email.`,
   )
 
   return NextResponse.json({ result: "success" })

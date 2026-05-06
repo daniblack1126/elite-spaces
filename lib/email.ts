@@ -39,27 +39,32 @@ export async function sendEmail(to: string, subject: string, html: string) {
 export function approvalConfirmationEmail(firstName: string) {
   return wrap(`
     <p style="font-size:22px;font-weight:300;font-style:italic;line-height:1.5;margin-bottom:24px;">Hi ${firstName},</p>
-    <p style="font-size:14px;font-weight:300;line-height:1.9;color:#5a5550;margin-bottom:20px;">Thank you for requesting access to Elite Spaces. We review each application personally and will be in touch within one week.</p>
+    <p style="font-size:14px;font-weight:300;line-height:1.9;color:#5a5550;margin-bottom:20px;">We've received your application and it's now under review. We go through each one personally — so you can expect to hear from us within the week.</p>
+    <p style="font-size:14px;font-weight:300;line-height:1.9;color:#5a5550;margin-bottom:20px;">Elite Spaces is a curated monthly briefing for people who move through New York with intention — the restaurants worth reserving, the openings worth attending, the rooms worth knowing about. Sourced from hundreds of publications so you don't have to be.</p>
     <p style="font-size:14px;font-weight:300;line-height:1.9;color:#5a5550;">In the meantime, follow along on <a href="${TIKTOK_URL}" style="color:#3d2b20;">TikTok</a> for a preview of what's inside.</p>
   `)
 }
 
 export function paymentEmail(firstName: string, email: string) {
   return wrap(`
-    <p style="font-size:22px;font-weight:300;font-style:italic;line-height:1.5;margin-bottom:24px;">Hi ${firstName},</p>
-    <p style="font-size:14px;font-weight:300;line-height:1.9;color:#5a5550;margin-bottom:32px;">Your application has been approved. Choose your membership below to unlock your personal calendar.</p>
+    <p style="font-size:22px;font-weight:300;font-style:italic;line-height:1.5;margin-bottom:24px;">You're in, ${firstName}.</p>
+    <p style="font-size:14px;font-weight:300;line-height:1.9;color:#5a5550;margin-bottom:8px;">Your application has been approved. Choose your membership below to unlock your personal calendar — updated the first Sunday of every month.</p>
+    <p style="font-size:14px;font-weight:300;line-height:1.9;color:#5a5550;margin-bottom:32px;">Both plans include full access to the Elite Spaces calendar. No ads, ever.</p>
     <div style="border:0.5px solid #C8C5BC;padding:24px;margin-bottom:16px;text-align:center;">
       <p style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#8a8580;margin-bottom:8px;">Monthly</p>
-      <p style="font-size:28px;font-weight:300;color:#3d2b20;margin-bottom:4px;">$12</p>
-      <p style="font-size:11px;color:#8a8580;margin-bottom:16px;">per month · cancel anytime</p>
-      <a href="${MONTHLY_LINK}?prefilled_email=${encodeURIComponent(email)}" style="display:inline-block;background:#3d2b20;color:#F7F5F0;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;padding:14px 32px;text-decoration:none;">Choose Monthly</a>
+      <p style="font-size:32px;font-weight:300;color:#3d2b20;margin-bottom:2px;">$12<span style="font-size:14px;color:#8a8580;">/mo</span></p>
+      <p style="font-size:11px;color:#8a8580;margin-bottom:20px;">Billed monthly · cancel anytime</p>
+      <a href="${MONTHLY_LINK}?prefilled_email=${encodeURIComponent(email)}" style="display:inline-block;background:#3d2b20;color:#F7F5F0;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;padding:14px 32px;text-decoration:none;">Get Monthly Access</a>
     </div>
-    <div style="border:0.5px solid #3d2b20;padding:24px;text-align:center;">
-      <p style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#8a8580;margin-bottom:8px;">Founding Member</p>
-      <p style="font-size:28px;font-weight:300;color:#3d2b20;margin-bottom:4px;">$99</p>
-      <p style="font-size:11px;color:#8a8580;margin-bottom:16px;">per year · locked-in rate forever</p>
-      <a href="${FOUNDING_LINK}?prefilled_email=${encodeURIComponent(email)}" style="display:inline-block;background:#3d2b20;color:#F7F5F0;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;padding:14px 32px;text-decoration:none;">Choose Founding</a>
+    <div style="border:0.5px solid #3d2b20;padding:24px;text-align:center;background:#faf9f6;">
+      <p style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#8a8580;margin-bottom:4px;">Founding Member</p>
+      <p style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#3d2b20;margin-bottom:12px;">— Limited availability —</p>
+      <p style="font-size:32px;font-weight:300;color:#3d2b20;margin-bottom:2px;">$99<span style="font-size:14px;color:#8a8580;">/yr</span></p>
+      <p style="font-size:11px;color:#8a8580;margin-bottom:4px;">Billed annually · save $45 vs monthly</p>
+      <p style="font-size:11px;color:#8a8580;margin-bottom:20px;">Your rate is locked in forever, even as prices increase</p>
+      <a href="${FOUNDING_LINK}?prefilled_email=${encodeURIComponent(email)}" style="display:inline-block;background:#3d2b20;color:#F7F5F0;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;padding:14px 32px;text-decoration:none;">Become a Founding Member</a>
     </div>
+    <p style="font-size:11px;color:#8a8580;margin-top:20px;text-align:center;">Your spot is reserved. Complete checkout to activate your access.</p>
   `)
 }
 
