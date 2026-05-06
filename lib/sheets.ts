@@ -8,18 +8,19 @@ export const COL = {
   lastName:             3,
   email:                4,
   source:               5,
-  status:               6,
-  stripeCustomerId:     7,
-  stripeSubscriptionId: 8,
-  plan:                 9,
-  loginToken:           10,
-  tokenExpiry:          11,
-  appliedAt:            12,
-  approvedAt:           13,
-  paymentDate:          14,
-  nextBillingDate:      15,
-  cancelledAt:          16,
-  notes:                17,
+  applicationStatus:    6,  // you fill: pending / approved / rejected
+  memberStatus:         7,  // auto:     payment_pending / active / cancelling / cancelled / payment_failed
+  stripeCustomerId:     8,
+  stripeSubscriptionId: 9,
+  plan:                 10,
+  loginToken:           11,
+  tokenExpiry:          12,
+  appliedAt:            13,
+  approvedAt:           14,
+  paymentDate:          15,
+  nextBillingDate:      16,
+  cancelledAt:          17,
+  notes:                18,
 }
 
 function getAuth() {
@@ -41,7 +42,7 @@ export async function findRowByEmail(email: string) {
   const sheets = await getSheets()
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.GOOGLE_SHEET_ID,
-    range: `${SHEET_NAME}!A:Q`,
+    range: `${SHEET_NAME}!A:R`,
   })
   const rows = res.data.values ?? []
   const emailLower = email.toLowerCase()
@@ -76,7 +77,7 @@ export async function appendRow(values: (string | Date | number | null)[]) {
   )
   await sheets.spreadsheets.values.append({
     spreadsheetId:   process.env.GOOGLE_SHEET_ID,
-    range:           `${SHEET_NAME}!A:Q`,
+    range:           `${SHEET_NAME}!A:R`,
     valueInputOption: "USER_ENTERED",
     requestBody:     { values: [serialised] },
   })

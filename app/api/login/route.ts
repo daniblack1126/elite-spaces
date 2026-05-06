@@ -3,7 +3,7 @@ import crypto from "crypto"
 import { findRowByEmail, updateCell, COL } from "@/lib/sheets"
 import { sendEmail, loginEmail } from "@/lib/email"
 
-const VALID_STATUSES = ["monthly_member", "founding_member"]
+const VALID_STATUSES = ["active", "cancelling"]
 
 export async function GET(req: NextRequest) {
   const email = req.nextUrl.searchParams.get("email")?.toLowerCase().trim()
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const result = await findRowByEmail(email)
   if (!result) return NextResponse.json({ result: "not_found" })
 
-  const status = result.data[COL.status - 1]
+  const status = result.data[COL.memberStatus - 1]
   if (!VALID_STATUSES.includes(status)) {
     return NextResponse.json({ result: "not_member", status })
   }

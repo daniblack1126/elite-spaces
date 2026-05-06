@@ -39,8 +39,7 @@ export async function POST(req: NextRequest) {
 
     const result = await findRowByEmail(email)
     if (result) {
-      const status = plan === "founding" ? "founding_member" : "monthly_member"
-      await updateCell(result.row, COL.status,               status)
+      await updateCell(result.row, COL.memberStatus,         "active")
       await updateCell(result.row, COL.stripeCustomerId,     customerId ?? "")
       await updateCell(result.row, COL.stripeSubscriptionId, subId ?? "")
       await updateCell(result.row, COL.plan,                 plan)
@@ -58,8 +57,8 @@ export async function POST(req: NextRequest) {
 
     const result = await findRowByEmail(email)
     if (result) {
-      await updateCell(result.row, COL.status,      "cancelled")
-      await updateCell(result.row, COL.cancelledAt, new Date().toISOString())
+      await updateCell(result.row, COL.memberStatus, "cancelled")
+      await updateCell(result.row, COL.cancelledAt,  new Date().toISOString())
     }
   }
 
@@ -69,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     const result = await findRowByEmail(email)
     if (result) {
-      await updateCell(result.row, COL.status, "payment_failed")
+      await updateCell(result.row, COL.memberStatus, "payment_failed")
       const firstName = result.data[COL.firstName - 1]
       await sendEmail(email, "Payment issue — Elite Spaces", paymentFailedEmail(firstName))
     }

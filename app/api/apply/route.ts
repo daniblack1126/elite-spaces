@@ -16,18 +16,19 @@ export async function POST(req: NextRequest) {
     lastName,   // C Last Name
     email,      // D Email
     source,     // E Source
-    "pending",  // F Status
-    null,       // G Stripe Customer ID
-    null,       // H Stripe Subscription ID
-    null,       // I Plan
-    null,       // J Login Token
-    null,       // K Token Expiry
-    now,        // L Applied At
-    null,       // M Approved At
-    null,       // N Payment Date
-    null,       // O Next Billing Date
-    null,       // P Cancelled At
-    null,       // Q Notes
+    "pending",  // F Application Status (you fill: pending → approved / rejected)
+    "",         // G Member Status (auto-managed)
+    null,       // H Stripe Customer ID
+    null,       // I Stripe Subscription ID
+    null,       // J Plan
+    null,       // K Login Token
+    null,       // L Token Expiry
+    now,        // M Applied At
+    null,       // N Approved At
+    null,       // O Payment Date
+    null,       // P Next Billing Date
+    null,       // Q Cancelled At
+    null,       // R Notes
   ])
 
   await sendEmail(

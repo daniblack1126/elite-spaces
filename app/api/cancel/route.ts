@@ -10,8 +10,8 @@ export async function POST(req: NextRequest) {
   const result = await findRowByEmail(emailLower)
   if (!result) return NextResponse.json({ result: "not_found" }, { status: 404 })
 
-  await updateCell(result.row, COL.status, "cancelling")
-  await updateCell(result.row, COL.cancelledAt, new Date().toISOString())
+  await updateCell(result.row, COL.memberStatus, "cancelling")
+  await updateCell(result.row, COL.cancelledAt,  new Date().toISOString())
 
   const firstName = result.data[COL.firstName - 1]
   await sendEmail(

@@ -3,11 +3,11 @@
 // Save this file as AppScript.gs in your project repo for reference
 
 const SHEET_NAME = "Sheet1"
-const ADMIN_EMAIL = "danielleblack1126@gmail.com"
-const SITE_URL = "https://elitespacesnyc.framer.website"
+const ADMIN_EMAIL = "daniblackbeauty@gmail.com"
+const SITE_URL = "https://elite-spaces-two.vercel.app"
 const TIKTOK_URL = "https://www.tiktok.com/@daniblackbeauty"
-const STRIPE_MONTHLY_LINK = "https://buy.stripe.com/YOUR_MONTHLY_LINK"
-const STRIPE_FOUNDING_LINK = "https://buy.stripe.com/YOUR_FOUNDING_LINK"
+const STRIPE_MONTHLY_LINK = "https://buy.stripe.com/test_9B66oGfxd4FU7Fe0kt6Na00"
+const STRIPE_FOUNDING_LINK = "https://buy.stripe.com/test_eVq28qcl1c8mgbKebj6Na01"
 const BYPASS_SECRET = "elitespaces2026"
 
 const COL = {
@@ -16,18 +16,19 @@ const COL = {
     lastName:             3,
     email:                4,
     source:               5,
-    status:               6,
-    stripeCustomerId:     7,
-    stripeSubscriptionId: 8,
-    plan:                 9,
-    loginToken:           10,
-    tokenExpiry:          11,
-    appliedAt:            12,
-    approvedAt:           13,
-    paymentDate:          14,
-    nextBillingDate:      15,
-    cancelledAt:          16,
-    notes:                17,
+    applicationStatus:    6,  // you fill: pending → approved / rejected
+    memberStatus:         7,  // auto:     payment_pending / active / cancelling / cancelled / payment_failed
+    stripeCustomerId:     8,
+    stripeSubscriptionId: 9,
+    plan:                 10,
+    loginToken:           11,
+    tokenExpiry:          12,
+    appliedAt:            13,
+    approvedAt:           14,
+    paymentDate:          15,
+    nextBillingDate:      16,
+    cancelledAt:          17,
+    notes:                18,
 }
 
 // ── UTILITIES ─────────────────────────────────────────────────────────────────
@@ -125,30 +126,37 @@ function handleNewApplication(data) {
     return jsonResponse({ result: "success" })
 }
 
-// ── APPROVAL EMAIL ────────────────────────────────────────────────────────────
-// Run manually from Apps Script editor after setting status to "approved".
-// Or set up an on-edit trigger to run automatically.
+// ── ON-EDIT TRIGGER ───────────────────────────────────────────────────────────
+// Fires automatically when you type in the sheet.
+// To activate: Apps Script editor → Triggers (clock icon) → Add trigger
+//   Function: onEdit | Event source: From spreadsheet | Event type: On edit
 
-function sendApprovalEmails() {
-    const sheet = getSheet()
-    const data = sheet.getDataRange().getValues()
+function onEdit(e) {
+    const sheet = e.source.getActiveSheet()
+    const col   = e.range.getColumn()
+    const row   = e.range.getRow()
 
-    for (let i = 1; i < data.length; i++) {
-        const row = data[i]
-        const status = row[COL.status - 1]
-        const email = row[COL.email - 1]
-        const firstName = row[COL.firstName - 1]
+    // Only watch Col F (Application Status), skip header row
+    if (col !== COL.applicationStatus || row <= 1) return
 
-        if (status === "approved") {
-            MailApp.sendEmail({
-                to: email,
-                subject: "Your Elite Spaces access is approved",
-                htmlBody: paymentEmail(firstName, email)
-            })
-            updateCell(i + 1, COL.status, "payment_pending")
-            updateCell(i + 1, COL.approvedAt, new Date())
-        }
+    const newValue = String(e.value ?? "").toLowerCase().trim()
+
+    if (newValue === "approved") {
+        const email     = sheet.getRange(row, COL.email).getValue()
+        const firstName = sheet.getRange(row, COL.firstName).getValue()
+
+        // Update Member Status and Approved At
+        sheet.getRange(row, COL.memberStatus).setValue("payment_pending")
+        sheet.getRange(row, COL.approvedAt).setValue(new Date().toISOString())
+
+        // Send payment email with both plan links
+        MailApp.sendEmail({
+            to:       email,
+            subject:  "Your Elite Spaces access is approved",
+            htmlBody: paymentEmail(firstName, email),
+        })
     }
+    // rejected → do nothing (no email sent)
 }
 
 // ── MANUAL BYPASS ─────────────────────────────────────────────────────────────
