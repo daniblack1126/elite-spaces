@@ -20,6 +20,7 @@ export default function AccessForm() {
   const [lastName,      setLastName]      = useState("")
   const [email,         setEmail]         = useState("")
   const [source,        setSource]        = useState("")
+  const [handle,        setHandle]        = useState("")
   const [focused,       setFocused]       = useState("")
   const [loading,       setLoading]       = useState(false)
 
@@ -35,7 +36,7 @@ export default function AccessForm() {
       await fetch("/api/apply", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ firstName, lastName, email, source }),
+        body:    JSON.stringify({ firstName, lastName, email, source, handle }),
       })
     } catch (err) {
       console.error("Apply error:", err)
@@ -138,6 +139,19 @@ export default function AccessForm() {
                   <option value="other">Other</option>
                 </select>
               </div>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <label style={labelStyle as React.CSSProperties}>What&apos;s your handle? (Instagram / TikTok)</label>
+                <input
+                  style={inputStyle("handle")}
+                  type="text"
+                  placeholder="@yourhandle"
+                  value={handle}
+                  onChange={(e) => setHandle(e.target.value)}
+                  onFocus={() => setFocused("handle")}
+                  onBlur={() => setFocused("")}
+                />
+              </div>
+
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
                 <button
                   type="submit"

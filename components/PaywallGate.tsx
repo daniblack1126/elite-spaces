@@ -1,22 +1,18 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { colors, fonts, fontSizes, letterSpacing, spacing, trans, anchors, btnDarkFull, MOBILE_BP } from "@/lib/tokens"
+import { colors, fonts, fontSizes, letterSpacing, spacing, anchors, btnDarkFull, MOBILE_BP } from "@/lib/tokens"
 import { scrollTo } from "@/lib/utils"
 import { PAYWALL_PREVIEW } from "@/lib/events"
 
+
 interface Props {
-  stripeMonthlyLink:  string
-  stripeFoundingLink: string
   foundingMembersRemaining?: number
 }
 
 export default function PaywallGate({
-  stripeMonthlyLink,
-  stripeFoundingLink,
   foundingMembersRemaining = 14,
 }: Props) {
-  const [selectedPlan, setSelectedPlan] = useState<"monthly" | "founding">("founding")
   const [isMobile,     setIsMobile]     = useState(false)
 
   useEffect(() => {
@@ -25,15 +21,6 @@ export default function PaywallGate({
     window.addEventListener("resize", check)
     return () => window.removeEventListener("resize", check)
   }, [])
-
-  const planCardStyle = (featured: boolean, selected: boolean): React.CSSProperties => ({
-    border:     `0.5px solid ${featured || selected ? colors.ink : colors.rule}`,
-    padding:    "22px 16px",
-    textAlign:  "center",
-    cursor:     "pointer",
-    transition: `border-color ${trans.snap}`,
-    background: selected ? colors.warmOff : "transparent",
-  })
 
   const rowStyle: React.CSSProperties = {
     display:             "grid",
@@ -44,10 +31,6 @@ export default function PaywallGate({
     alignItems:          "start",
   }
 
-  const handleCheckout = () => {
-    const link = selectedPlan === "founding" ? stripeFoundingLink : stripeMonthlyLink
-    if (link) window.location.href = link
-  }
 
   return (
     <section
@@ -86,16 +69,14 @@ export default function PaywallGate({
               Unlock all 31 events and monthly updates. Cancel anytime.
             </p>
 
-            {/* Plan selector */}
+            {/* Pricing preview */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
-              <div style={planCardStyle(false, selectedPlan === "monthly")} onClick={() => setSelectedPlan("monthly")}>
-                <div style={{ display: "inline-block", fontFamily: fonts.ui, fontSize: fontSizes.micro, padding: "3px 10px", marginBottom: 12, visibility: "hidden" }}>placeholder</div>
+              <div style={{ border: `0.5px solid ${colors.rule}`, padding: "22px 16px", textAlign: "center" }}>
                 <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.micro, fontWeight: 400, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.muted, marginBottom: 10 }}>Monthly</div>
                 <div style={{ fontFamily: fonts.display, fontSize: fontSizes.accessHead, fontWeight: 300, color: colors.ink, lineHeight: 1 }}>$12</div>
-                <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.period, color: colors.muted, marginTop: 4, marginBottom: 14 }}>per month</div>
-                <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, lineHeight: 1.9, color: colors.muted }}>Full calendar<br />Cancel anytime</div>
+                <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.period, color: colors.muted, marginTop: 4 }}>per month</div>
               </div>
-              <div style={planCardStyle(true, selectedPlan === "founding")} onClick={() => setSelectedPlan("founding")}>
+              <div style={{ border: `0.5px solid ${colors.ink}`, padding: "22px 16px", textAlign: "center" }}>
                 {foundingMembersRemaining > 0 ? (
                   <div style={{ display: "inline-block", fontFamily: fonts.ui, fontSize: fontSizes.micro, fontWeight: 400, letterSpacing: letterSpacing.chip, textTransform: "uppercase", color: colors.ink, border: `0.5px solid ${colors.ink}`, padding: "3px 10px", marginBottom: 12 }}>
                     {foundingMembersRemaining} spots left
@@ -105,8 +86,7 @@ export default function PaywallGate({
                 )}
                 <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.micro, fontWeight: 400, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.muted, marginBottom: 10 }}>Founding Member</div>
                 <div style={{ fontFamily: fonts.display, fontSize: fontSizes.accessHead, fontWeight: 300, color: colors.ink, lineHeight: 1 }}>$99</div>
-                <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.period, color: colors.muted, marginTop: 4, marginBottom: 14 }}>per year</div>
-                <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, lineHeight: 1.9, color: colors.muted }}>Full calendar<br />Locked-in rate forever</div>
+                <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.period, color: colors.muted, marginTop: 4 }}>per year</div>
               </div>
             </div>
 
@@ -114,7 +94,7 @@ export default function PaywallGate({
               style={btnDarkFull as React.CSSProperties}
               onMouseEnter={(e) => (e.currentTarget.style.background = colors.inkHover)}
               onMouseLeave={(e) => (e.currentTarget.style.background = colors.ink)}
-              onClick={handleCheckout}
+              onClick={() => scrollTo(anchors.accessForm)}
             >
               Become a member
             </button>

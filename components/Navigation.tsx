@@ -38,9 +38,9 @@ export default function Navigation({ session, onSignOut }: Props) {
         { label: "About",       id: null },
       ]
     : [
-        { label: "About",      id: null },
         { label: "This Month", id: anchors.calendar },
         { label: "Apply",      id: anchors.accessForm },
+        { label: "Sign In",    id: anchors.login },
       ]
 
   const navStyle: React.CSSProperties = {

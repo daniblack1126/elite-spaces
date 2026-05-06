@@ -3,7 +3,7 @@ import { appendRow } from "@/lib/sheets"
 import { sendEmail, approvalConfirmationEmail } from "@/lib/email"
 
 export async function POST(req: NextRequest) {
-  const { firstName, lastName, email, source } = await req.json()
+  const { firstName, lastName, email, source, handle } = await req.json()
   if (!firstName || !email) {
     return NextResponse.json({ result: "error", message: "Missing fields" }, { status: 400 })
   }
@@ -11,24 +11,25 @@ export async function POST(req: NextRequest) {
   const now = new Date()
 
   await appendRow([
-    now,        // A Timestamp
-    firstName,  // B First Name
-    lastName,   // C Last Name
-    email,      // D Email
-    source,     // E Source
-    "pending",  // F Application Status (you fill: pending → approved / rejected)
-    "",         // G Member Status (auto-managed)
-    null,       // H Stripe Customer ID
-    null,       // I Stripe Subscription ID
-    null,       // J Plan
-    null,       // K Login Token
-    null,       // L Token Expiry
-    now,        // M Applied At
-    null,       // N Approved At
-    null,       // O Payment Date
-    null,       // P Next Billing Date
-    null,       // Q Cancelled At
-    null,       // R Notes
+    now,           // A Timestamp
+    firstName,     // B First Name
+    lastName,      // C Last Name
+    email,         // D Email
+    source,        // E Source
+    handle ?? "",  // F Handle (Instagram/TikTok)
+    "pending",     // G Application Status (you fill: pending → approved / rejected)
+    "",            // H Member Status (auto-managed)
+    null,          // I Stripe Customer ID
+    null,          // J Stripe Subscription ID
+    null,          // K Plan
+    null,          // L Login Token
+    null,          // M Token Expiry
+    now,           // N Applied At
+    null,          // O Approved At
+    null,          // P Payment Date
+    null,          // Q Next Billing Date
+    null,          // R Cancelled At
+    null,          // S Notes
   ])
 
   await sendEmail(

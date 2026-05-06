@@ -34,15 +34,10 @@ export default function PageClient({
     <>
       <Navigation session={session} onSignOut={handleSignOut} />
       <Hero session={session} onSessionChange={setSession} />
+      <CalendarView session={session} />
+      {!session && <PaywallGate />}
       {!session && <AccessForm />}
       {!session && <LoginForm />}
-      <CalendarView session={session} />
-      {!session && (
-        <PaywallGate
-          stripeMonthlyLink={stripeMonthlyLink}
-          stripeFoundingLink={stripeFoundingLink}
-        />
-      )}
       {session && <MemberFooter session={session} onSignOut={handleSignOut} />}
       <Footer />
     </>
