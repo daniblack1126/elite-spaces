@@ -93,23 +93,25 @@ function handleNewApplication(data) {
     const now = new Date()
 
     sheet.appendRow([
-        now,            // A - Timestamp
-        data.firstName, // B - First Name
-        data.lastName,  // C - Last Name
-        data.email,     // D - Email
-        data.source,    // E - Source
-        "pending",      // F - Status
-        "",             // G - Stripe Customer ID
-        "",             // H - Stripe Subscription ID
-        "",             // I - Plan
-        "",             // J - Login Token
-        "",             // K - Token Expiry
-        now,            // L - Applied At
-        "",             // M - Approved At
-        "",             // N - Payment Date
-        "",             // O - Next Billing Date
-        "",             // P - Cancelled At
-        "",             // Q - Notes
+        now,                    // A - Timestamp
+        data.firstName || "",   // B - First Name
+        data.lastName  || "",   // C - Last Name
+        data.email     || "",   // D - Email
+        data.source    || "",   // E - Source
+        data.handle    || "",   // F - Handle (Instagram / TikTok)
+        "pending",              // G - Application Status
+        "",                     // H - Member Status
+        "",                     // I - Stripe Customer ID
+        "",                     // J - Stripe Subscription ID
+        "",                     // K - Plan
+        "",                     // L - Login Token
+        "",                     // M - Token Expiry
+        now,                    // N - Applied At
+        "",                     // O - Approved At
+        "",                     // P - Payment Date
+        "",                     // Q - Next Billing Date
+        "",                     // R - Cancelled At
+        "",                     // S - Notes
     ])
 
     MailApp.sendEmail({
@@ -121,7 +123,7 @@ function handleNewApplication(data) {
     MailApp.sendEmail({
         to: ADMIN_EMAIL,
         subject: `New Elite Spaces application — ${data.firstName} ${data.lastName}`,
-        body: `New application:\n\nName: ${data.firstName} ${data.lastName}\nEmail: ${data.email}\nSource: ${data.source}\nTime: ${now}\n\nChange status to "approved" in the sheet then run sendApprovalEmails.`
+        body: `New application:\n\nName: ${data.firstName} ${data.lastName}\nEmail: ${data.email}\nHandle: ${data.handle || "—"}\nSource: ${data.source}\nTime: ${now}\n\nSet status to "approved" in column G of the sheet to trigger the payment email.`
     })
 
     return jsonResponse({ result: "success" })
