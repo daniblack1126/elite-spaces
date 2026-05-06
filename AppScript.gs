@@ -268,41 +268,39 @@ function handleVerifyGet(params) {
 // ── STRIPE WEBHOOK ────────────────────────────────────────────────────────────
 
 function handleStripeWebhook(data) {
-    const email = data.email
+    const email = (data.email || "").toLowerCase().trim()
     const result = findRowByEmail(email)
     if (!result) return jsonResponse({ result: "email_not_found" })
 
     const { row } = result
 
-    if (data.event === "payment_succeeded") {
-        const plan = data.plan
-        updateCell(row, COL.status, plan === "founding" ? "founding_member" : "monthly_member")
-        updateCell(row, COL.stripeCustomerId, data.customerId || "")
+    if (data.event === "checkout_completed") {
+        updateCell(row, COL.memberStatus,         "active")
+        updateCell(row, COL.stripeCustomerId,     data.customerId     || "")
         updateCell(row, COL.stripeSubscriptionId, data.subscriptionId || "")
-        updateCell(row, COL.plan, plan)
-        updateCell(row, COL.paymentDate, new Date())
-        updateCell(row, COL.nextBillingDate, data.nextBillingDate || "")
+        updateCell(row, COL.plan,                 data.plan           || "monthly")
+        updateCell(row, COL.paymentDate,          new Date())
 
         const firstName = result.data[COL.firstName - 1]
         MailApp.sendEmail({
-            to: email,
-            subject: "Welcome to Elite Spaces",
-            htmlBody: welcomeEmail(firstName)
+            to:       email,
+            subject:  "Welcome to Elite Spaces",
+            htmlBody: welcomeEmail(firstName),
         })
     }
 
     if (data.event === "subscription_cancelled") {
-        updateCell(row, COL.status, "cancelled")
-        updateCell(row, COL.cancelledAt, new Date())
+        updateCell(row, COL.memberStatus, "cancelled")
+        updateCell(row, COL.cancelledAt,  new Date())
     }
 
     if (data.event === "payment_failed") {
-        updateCell(row, COL.status, "payment_failed")
+        updateCell(row, COL.memberStatus, "payment_failed")
         const firstName = result.data[COL.firstName - 1]
         MailApp.sendEmail({
-            to: email,
-            subject: "Payment issue — Elite Spaces",
-            htmlBody: paymentFailedEmail(firstName)
+            to:       email,
+            subject:  "Payment issue — Elite Spaces",
+            htmlBody: paymentFailedEmail(firstName),
         })
     }
 
@@ -312,18 +310,18 @@ function handleStripeWebhook(data) {
 // ── CANCELLATION ──────────────────────────────────────────────────────────────
 
 function handleCancel(data) {
-    const email = data.email.toLowerCase().trim()
+    const email = (data.email || "").toLowerCase().trim()
     const result = findRowByEmail(email)
     if (!result) return jsonResponse({ result: "not_found" })
 
-    updateCell(result.row, COL.status, "cancelling")
-    updateCell(result.row, COL.cancelledAt, new Date())
+    updateCell(result.row, COL.memberStatus, "cancelling")
+    updateCell(result.row, COL.cancelledAt,  new Date())
 
     const firstName = result.data[COL.firstName - 1]
     MailApp.sendEmail({
-        to: email,
-        subject: "Cancellation confirmed — Elite Spaces",
-        htmlBody: cancellationEmail(firstName)
+        to:       email,
+        subject:  "Cancellation confirmed — Elite Spaces",
+        htmlBody: cancellationEmail(firstName),
     })
 
     return jsonResponse({ result: "cancellation_received" })

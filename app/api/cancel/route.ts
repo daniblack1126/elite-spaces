@@ -1,24 +1,22 @@
 import { NextRequest, NextResponse } from "next/server"
-import { findRowByEmail, updateCell, COL } from "@/lib/sheets"
-import { sendEmail, cancellationEmail } from "@/lib/email"
+
+const APPS_SCRIPT_URL = process.env.APPS_SCRIPT_URL ?? ""
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json()
   if (!email) return NextResponse.json({ result: "error" }, { status: 400 })
 
-  const emailLower = (email as string).toLowerCase().trim()
-  const result = await findRowByEmail(emailLower)
-  if (!result) return NextResponse.json({ result: "not_found" }, { status: 404 })
-
-  await updateCell(result.row, COL.memberStatus, "cancelling")
-  await updateCell(result.row, COL.cancelledAt,  new Date().toISOString())
-
-  const firstName = result.data[COL.firstName - 1]
-  await sendEmail(
-    emailLower,
-    "Cancellation confirmed — Elite Spaces",
-    cancellationEmail(firstName),
-  )
-
-  return NextResponse.json({ result: "cancellation_received" })
+  try {
+    const res  = await fetch(APPS_SCRIPT_URL, {
+      method:   "POST",
+      headers:  { "Content-Type": "text/plain" },
+      body:     JSON.stringify({ action: "cancel", email }),
+      redirect: "follow",
+    })
+    const data = await res.json()
+    return NextResponse.json(data)
+  } catch (err) {
+    console.error("Cancel error:", err)
+    return NextResponse.json({ result: "error" }, { status: 500 })
+  }
 }
