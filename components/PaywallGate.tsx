@@ -89,7 +89,7 @@ export default function PaywallGate({
             {/* Plan selector */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
               <div style={planCardStyle(false, selectedPlan === "monthly")} onClick={() => setSelectedPlan("monthly")}>
-                <div style={{ display: "inline-block", fontFamily: fonts.ui, fontSize: fontSizes.micro, padding: "3px 10px", marginBottom: 12, visibility: "hidden" }}>placeholder</div>
+                <div style={{ height: 28, marginBottom: 12 }} />
                 <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.micro, fontWeight: 400, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.muted, marginBottom: 10 }}>Monthly</div>
                 <div style={{ fontFamily: fonts.display, fontSize: fontSizes.accessHead, fontWeight: 300, color: colors.ink, lineHeight: 1 }}>$12</div>
                 <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.period, color: colors.muted, marginTop: 4, marginBottom: 14 }}>per month</div>
