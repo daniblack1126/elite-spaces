@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { findRowByEmail, updateCell, COL } from "@/lib/sheets"
 import type { Session } from "@/lib/types"
+
+const APPS_SCRIPT_URL = process.env.APPS_SCRIPT_URL ?? ""
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -18,32 +19,29 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ result: "error" }, { status: 400 })
   }
 
-  const result = await findRowByEmail(email)
-  if (!result) return NextResponse.json({ result: "not_found" })
+  try {
+    const res  = await fetch(
+      `${APPS_SCRIPT_URL}?action=verify&token=${token}&email=${encodeURIComponent(email)}`,
+      { redirect: "follow" },
+    )
+    const data = await res.json()
 
-  const storedToken = result.data[COL.loginToken - 1]
-  const expiryStr   = result.data[COL.tokenExpiry - 1]
+    if (data.result !== "success") {
+      return NextResponse.json(data)
+    }
 
-  if (storedToken !== token) {
-    return NextResponse.json({ result: "invalid_token" })
+    const session: Session = {
+      firstName:      data.firstName,
+      email,
+      plan:           data.plan,
+      subscriptionId: data.subscriptionId ?? "",
+    }
+
+    const response = NextResponse.json({ result: "success", ...session })
+    response.cookies.set("es_session", JSON.stringify(session), COOKIE_OPTIONS)
+    return response
+  } catch (err) {
+    console.error("Verify error:", err)
+    return NextResponse.json({ result: "error" }, { status: 500 })
   }
-
-  if (!expiryStr || new Date() > new Date(expiryStr)) {
-    return NextResponse.json({ result: "token_expired" })
-  }
-
-  // Consume the token
-  await updateCell(result.row, COL.loginToken, "")
-  await updateCell(result.row, COL.tokenExpiry, "")
-
-  const session: Session = {
-    firstName:      result.data[COL.firstName - 1],
-    email,
-    plan:           result.data[COL.plan - 1],
-    subscriptionId: result.data[COL.stripeSubscriptionId - 1] ?? "",
-  }
-
-  const res = NextResponse.json({ result: "success", ...session })
-  res.cookies.set("es_session", JSON.stringify(session), COOKIE_OPTIONS)
-  return res
 }

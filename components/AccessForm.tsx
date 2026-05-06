@@ -27,7 +27,7 @@ export default function AccessForm() {
   const ref     = useRef(null)
   const inView  = useInView(ref, { once: true, margin: "-15%" })
 
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjrONIPum82nLP3O3IOS4YjKjZcDCqxbNFvTgyzIr71-9Fk6lh3EuQ3G0-7GJk8geT/exec"
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFguDTB_NRpzDyUJWNxLqvfm0r-fMw0613ATL3nl6tYxe6I07Ut1RseHpdDMDPcJAG/exec"
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

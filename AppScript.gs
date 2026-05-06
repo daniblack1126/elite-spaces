@@ -207,8 +207,8 @@ function handleLoginGet(params) {
         return jsonResponse({ result: "not_found" })
     }
 
-    const status = result.data[COL.status - 1]
-    const validStatuses = ["monthly_member", "founding_member"]
+    const status = result.data[COL.memberStatus - 1]
+    const validStatuses = ["active", "cancelling"]
 
     if (!validStatuses.includes(status)) {
         return jsonResponse({ result: "not_member", status: status })
