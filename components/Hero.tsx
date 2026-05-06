@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { colors, fonts, fontSizes, letterSpacing, trans, anchors, btnDark } from "@/lib/tokens"
+import { colors, fonts, fontSizes, letterSpacing, trans, anchors, btnDark, MOBILE_BP } from "@/lib/tokens"
 import { scrollTo } from "@/lib/utils"
 import type { Session } from "@/lib/types"
 
@@ -13,6 +13,14 @@ interface Props {
 
 export default function Hero({ session, onSessionChange }: Props) {
   const [verifying, setVerifying] = useState(false)
+  const [isMobile,  setIsMobile]  = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= MOBILE_BP)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   useEffect(() => {
     // Hash-based magic link: https://domain.com#token=TOKEN&email=EMAIL
@@ -62,7 +70,7 @@ export default function Hero({ session, onSessionChange }: Props) {
   return (
     <section
       id={anchors.hero}
-      style={{ background: colors.cream, padding: "120px 60px 100px", textAlign: "center", fontFamily: fonts.ui }}
+      style={{ background: colors.cream, padding: isMobile ? "80px 24px 60px" : "120px 60px 100px", textAlign: "center", fontFamily: fonts.ui }}
     >
       {verifying && (
         <div style={{ position: "fixed", inset: 0, background: colors.cream, zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fonts.ui, fontSize: fontSizes.label, letterSpacing: letterSpacing.button, textTransform: "uppercase", color: colors.muted }}>
@@ -81,7 +89,7 @@ export default function Hero({ session, onSessionChange }: Props) {
 
         <motion.h1
           variants={item}
-          style={{ fontFamily: fonts.display, fontSize: fontSizes.heroHead, lineHeight: 1.08, color: colors.ink, marginBottom: 18 }}
+          style={{ fontFamily: fonts.display, fontSize: isMobile ? 36 : fontSizes.heroHead, lineHeight: 1.08, color: colors.ink, marginBottom: 18 }}
         >
           <span style={{ fontStyle: "italic", fontWeight: 300, display: "block" }}>
             {displayName}{firstName ? "'s" : ""}

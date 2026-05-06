@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { colors, fonts, fontSizes, letterSpacing, spacing, trans, anchors, btnDarkFull, labelStyle } from "@/lib/tokens"
+import { colors, fonts, fontSizes, letterSpacing, spacing, trans, anchors, btnDarkFull, labelStyle, MOBILE_BP } from "@/lib/tokens"
 import { scrollTo } from "@/lib/utils"
 
 type Status = "idle" | "loading" | "sent" | "not_found" | "not_member" | "error"
@@ -15,9 +15,17 @@ const messages: Record<string, { text: string; color: string }> = {
 }
 
 export default function LoginForm() {
-  const [email,   setEmail]   = useState("")
-  const [focused, setFocused] = useState(false)
-  const [status,  setStatus]  = useState<Status>("idle")
+  const [email,    setEmail]   = useState("")
+  const [focused,  setFocused] = useState(false)
+  const [status,   setStatus]  = useState<Status>("idle")
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= MOBILE_BP)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,7 +45,7 @@ export default function LoginForm() {
   return (
     <section
       id={anchors.login}
-      style={{ background: colors.cream, padding: `${spacing.sectionY} 60px`, borderTop: `0.5px solid ${colors.rule}` }}
+      style={{ background: colors.cream, padding: isMobile ? `${spacing.sectionY} 24px` : `${spacing.sectionY} 60px`, borderTop: `0.5px solid ${colors.rule}` }}
     >
       <div style={{ maxWidth: 480, margin: "0 auto", textAlign: "center" }}>
 

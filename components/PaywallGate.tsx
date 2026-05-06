@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { colors, fonts, fontSizes, letterSpacing, spacing, trans, anchors, btnDarkFull } from "@/lib/tokens"
+import { useState, useEffect } from "react"
+import { colors, fonts, fontSizes, letterSpacing, spacing, trans, anchors, btnDarkFull, MOBILE_BP } from "@/lib/tokens"
 import { scrollTo } from "@/lib/utils"
 import { PAYWALL_PREVIEW } from "@/lib/events"
 
@@ -17,6 +17,14 @@ export default function PaywallGate({
   foundingMembersRemaining = 14,
 }: Props) {
   const [selectedPlan, setSelectedPlan] = useState<"monthly" | "founding">("founding")
+  const [isMobile,     setIsMobile]     = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= MOBILE_BP)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   const planCardStyle = (featured: boolean, selected: boolean): React.CSSProperties => ({
     border:     `0.5px solid ${featured || selected ? colors.ink : colors.rule}`,
@@ -44,7 +52,7 @@ export default function PaywallGate({
   return (
     <section
       id={anchors.paywallGate}
-      style={{ background: colors.cream, padding: spacing.paywallSection }}
+      style={{ background: colors.cream, padding: isMobile ? "0 24px 80px" : spacing.paywallSection }}
     >
       <div style={{ maxWidth: spacing.innerMaxWidth, margin: "0 auto" }}>
 
@@ -68,7 +76,7 @@ export default function PaywallGate({
 
         {/* Paywall card */}
         <div style={{ maxWidth: spacing.paywallCardMax, margin: "0 auto" }}>
-          <div style={{ background: colors.cream, border: `0.5px solid ${colors.hint}`, padding: "56px 52px", textAlign: "center" }}>
+          <div style={{ background: colors.cream, border: `0.5px solid ${colors.hint}`, padding: isMobile ? "36px 24px" : "56px 52px", textAlign: "center" }}>
 
             <div style={{ fontFamily: fonts.display, fontSize: fontSizes.eventName, color: colors.hint, marginBottom: 22, letterSpacing: letterSpacing.subline }}>— ✦ —</div>
             <h3 style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: fontSizes.paywallHead, fontWeight: 300, color: colors.ink, lineHeight: 1.25, marginBottom: 12 }}>

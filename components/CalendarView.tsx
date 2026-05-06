@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
-import { colors, fonts, fontSizes, letterSpacing, spacing, trans, anchors } from "@/lib/tokens"
+import { colors, fonts, fontSizes, letterSpacing, spacing, trans, anchors, MOBILE_BP } from "@/lib/tokens"
 import { getGreeting, scrollTo } from "@/lib/utils"
 import { PREVIEW_EVENTS, FULL_EVENTS, FILTERS, type Event } from "@/lib/events"
 import type { Session } from "@/lib/types"
@@ -62,7 +62,15 @@ interface Props {
 export default function CalendarView({ session }: Props) {
   const [activeFilter, setActiveFilter] = useState("all")
   const [drawerEvent,  setDrawerEvent]  = useState<Event | null>(null)
+  const [isMobile,     setIsMobile]     = useState(false)
   const greeting = getGreeting()
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= MOBILE_BP)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   const events   = session ? FULL_EVENTS : PREVIEW_EVENTS
   const filtered = activeFilter === "all"
@@ -87,12 +95,12 @@ export default function CalendarView({ session }: Props) {
   return (
     <section
       id={anchors.calendar}
-      style={{ background: colors.cream, padding: `${spacing.sectionY} 60px` }}
+      style={{ background: colors.cream, padding: isMobile ? `${spacing.sectionY} 24px` : `${spacing.sectionY} 60px` }}
     >
       <div style={{ maxWidth: spacing.innerMaxWidth, margin: "0 auto" }}>
 
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 44 }}>
+        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "flex-start", justifyContent: "space-between", gap: isMobile ? 20 : 0, marginBottom: 44 }}>
           <div>
             <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.muted, marginBottom: 7 }}>
               {greeting}
@@ -153,7 +161,7 @@ export default function CalendarView({ session }: Props) {
             <motion.div
               initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: 400, background: colors.cream, zIndex: 91, padding: 48, display: "flex", flexDirection: "column", gap: 20 }}
+              style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: isMobile ? "100vw" : 400, background: colors.cream, zIndex: 91, padding: isMobile ? 32 : 48, display: "flex", flexDirection: "column", gap: 20 }}
             >
               <button onClick={() => setDrawerEvent(null)} style={{ position: "absolute", top: 20, right: 20, background: "none", border: "none", fontSize: 20, cursor: "pointer", color: colors.ink }}>✕</button>
               <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.tag, fontWeight: 300, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.hint }}>

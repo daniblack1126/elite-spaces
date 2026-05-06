@@ -1,10 +1,19 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { motion, useInView } from "framer-motion"
-import { colors, fonts, fontSizes, letterSpacing, spacing, trans, anchors, btnDark, labelStyle } from "@/lib/tokens"
+import { colors, fonts, fontSizes, letterSpacing, spacing, trans, anchors, btnDark, labelStyle, MOBILE_BP } from "@/lib/tokens"
 
 export default function AccessForm() {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= MOBILE_BP)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
+
   const [submitted,     setSubmitted]     = useState(false)
   const [submittedName, setSubmittedName] = useState("")
   const [firstName,     setFirstName]     = useState("")
@@ -63,10 +72,10 @@ export default function AccessForm() {
     <section
       id={anchors.accessForm}
       ref={ref}
-      style={{ background: colors.warmOff, padding: `${spacing.accessSectionY} 60px`, borderTop: `0.5px solid ${colors.rule}`, borderBottom: `0.5px solid ${colors.rule}` }}
+      style={{ background: colors.warmOff, padding: isMobile ? `${spacing.accessSectionY} 24px` : `${spacing.accessSectionY} 60px`, borderTop: `0.5px solid ${colors.rule}`, borderBottom: `0.5px solid ${colors.rule}` }}
     >
       <motion.div
-        style={{ maxWidth: spacing.accessMaxWidth, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}
+        style={{ maxWidth: spacing.accessMaxWidth, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 40 : 80, alignItems: "start" }}
         initial="hidden"
         animate={inView ? "show" : "hidden"}
       >
