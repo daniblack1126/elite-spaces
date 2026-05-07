@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
 import { colors, fonts, fontSizes, letterSpacing, spacing, trans, anchors, MOBILE_BP } from "@/lib/tokens"
 import { getGreeting, scrollTo } from "@/lib/utils"
-import { PREVIEW_EVENTS, FULL_EVENTS, FILTERS, type Event } from "@/lib/events"
+import { PREVIEW_EVENTS, FULL_EVENTS, FILTERS, CALENDAR_MONTH, CALENDAR_YEAR, type Event } from "@/lib/events"
 import type { Session } from "@/lib/types"
 
 function CalRow({ event, index, onClick }: { event: Event; index: number; onClick: () => void }) {
@@ -72,10 +72,16 @@ export default function CalendarView({ session }: Props) {
     return () => window.removeEventListener("resize", check)
   }, [])
 
+  const calDate    = new Date(CALENDAR_YEAR, CALENDAR_MONTH, 1)
+  const monthLabel = calDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })
+  const monthName  = calDate.toLocaleDateString("en-US", { month: "long" })
+  const currentYear = CALENDAR_YEAR
+
   const events   = session ? FULL_EVENTS : PREVIEW_EVENTS
-  const filtered = activeFilter === "all"
+  const filtered = (activeFilter === "all"
     ? events
     : events.filter((e) => e.categories.includes(activeFilter))
+  ).sort((a, b) => a.date - b.date)
 
   const chipStyle = (active: boolean): React.CSSProperties => ({
     fontFamily:    fonts.ui,
@@ -111,7 +117,7 @@ export default function CalendarView({ session }: Props) {
           </div>
           <div>
             <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.hint, marginBottom: 12, textAlign: "right" }}>
-              May 2026
+              {monthLabel}
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
               {FILTERS.map((f) => (
@@ -165,7 +171,7 @@ export default function CalendarView({ session }: Props) {
             >
               <button onClick={() => setDrawerEvent(null)} style={{ position: "absolute", top: 20, right: 20, background: "none", border: "none", fontSize: 20, cursor: "pointer", color: colors.ink }}>✕</button>
               <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.tag, fontWeight: 300, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.hint }}>
-                May {drawerEvent.date}, 2026 · {drawerEvent.day}
+                {monthName} {drawerEvent.date}, {currentYear} · {drawerEvent.day}
               </div>
               <div style={{ fontFamily: fonts.display, fontSize: fontSizes.confirm, fontWeight: 400, color: colors.ink, lineHeight: 1.3 }}>
                 {drawerEvent.name}
