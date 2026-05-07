@@ -167,6 +167,7 @@ export default function CalendarView({ session }: Props) {
     letterSpacing:  letterSpacing.button,
     textTransform:  "uppercase",
     color:          colors.ink,
+    borderBottom:   `0.5px solid ${colors.ink}`,
     paddingBottom:  1,
     textDecoration: "none",
     display:        "inline-block",
@@ -368,13 +369,13 @@ export default function CalendarView({ session }: Props) {
               )}
 
               {/* Calendar links */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 8 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 8, alignItems: "flex-start" }}>
                 {/* Add to Google Calendar */}
                 <a
                   href={gcalUrl(drawerEvent)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ ...calLinkStyle, borderBottom: `0.5px solid ${colors.ink}` }}
+                  style={calLinkStyle}
                 >
                   Add to Google Calendar
                 </a>
@@ -384,13 +385,11 @@ export default function CalendarView({ session }: Props) {
                   onClick={() => downloadICS(drawerEvent)}
                   style={{
                     ...calLinkStyle,
-                    border:        "none",
-                    borderBottom:  `0.5px solid ${colors.ink}`,
-                    padding:       0,
+                    background: "none",
+                    border:     "none",
+                    borderBottom: `0.5px solid ${colors.ink}`,
+                    padding:    0,
                     paddingBottom: 1,
-                    background:    "none",
-                    textAlign:     "left" as const,
-                    width:         "fit-content",
                   }}
                 >
                   Add to Outlook Calendar
