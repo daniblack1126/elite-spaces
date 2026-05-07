@@ -89,7 +89,7 @@ export default function Hero({ session, onSessionChange }: Props) {
 
         <motion.h1
           variants={item}
-          style={{ fontFamily: fonts.display, fontSize: isMobile ? 36 : fontSizes.heroHead, lineHeight: 1.08, color: colors.ink, marginBottom: 18 }}
+          style={{ fontFamily: fonts.display, fontSize: isMobile ? 36 : fontSizes.heroHead, lineHeight: 1.08, color: colors.ink, marginBottom: 18, textAlign: "center" }}
         >
           <span style={{ fontStyle: "italic", fontWeight: 300, display: "block" }}>
             {displayName}{firstName ? "'s" : ""}

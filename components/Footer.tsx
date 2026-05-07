@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { colors, fonts, fontSizes, letterSpacing, spacing, trans } from "@/lib/tokens"
+import { colors, fonts, fontSizes, letterSpacing, spacing, trans, MOBILE_BP } from "@/lib/tokens"
 
 const PRIVACY_TEXT = `Elite Spaces NYC collects only the information you voluntarily provide when requesting access or becoming a member — your name, email address, and how you found us.
 
@@ -27,7 +27,15 @@ For questions, contact hello@elitespaces.nyc.
 Last updated May 2026.`
 
 export default function Footer() {
-  const [modal, setModal] = useState<null | "privacy" | "terms">(null)
+  const [modal,    setModal]    = useState<null | "privacy" | "terms">(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= MOBILE_BP)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   const footerLinkStyle: React.CSSProperties = {
     color:          colors.muted,
@@ -38,15 +46,43 @@ export default function Footer() {
 
   return (
     <>
-      <footer style={{ background: colors.ink, padding: spacing.footerPadding, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <footer
+        style={{
+          background:     colors.ink,
+          padding:        isMobile ? "36px 24px" : spacing.footerPadding,
+          display:        "flex",
+          alignItems:     "center",
+          justifyContent: "space-between",
+          flexWrap:       "wrap",
+          gap:            isMobile ? 16 : 0,
+        }}
+      >
+        {/* Wordmark */}
         <div style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: fontSizes.wordmark, fontWeight: 400, letterSpacing: letterSpacing.wordmark, textTransform: "uppercase", color: colors.cream }}>
           Elite Spaces
         </div>
-        <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.chip, textTransform: "uppercase", color: colors.muted, display: "flex", gap: 28 }}>
-          <span>New York City</span>
-          <span>Private membership</span>
-          <span>Est. 2026</span>
-        </div>
+
+        {/* NYC / Private Membership / Est. 2026 — desktop only */}
+        {!isMobile && (
+          <div style={{
+            fontFamily:     fonts.ui,
+            fontSize:       fontSizes.label,
+            fontWeight:     300,
+            letterSpacing:  letterSpacing.chip,
+            textTransform:  "uppercase",
+            color:          colors.muted,
+            display:        "flex",
+            gap:            28,
+            alignItems:     "center",
+            justifyContent: "center",
+          }}>
+            <span>New York City</span>
+            <span>Private membership</span>
+            <span>Est. 2026</span>
+          </div>
+        )}
+
+        {/* Privacy / Terms / site */}
         <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.footerRight, color: colors.muted, textAlign: "right" }}>
           elitespaces.nyc<br />
           <a

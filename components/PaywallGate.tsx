@@ -61,8 +61,8 @@ export default function PaywallGate({
         <div style={{ maxWidth: spacing.paywallCardMax, margin: "0 auto" }}>
           <div style={{ background: colors.cream, border: `0.5px solid ${colors.hint}`, padding: isMobile ? "36px 24px" : "56px 52px", textAlign: "center" }}>
 
-            <div style={{ fontFamily: fonts.display, fontSize: fontSizes.eventName, color: colors.hint, marginBottom: 22, letterSpacing: letterSpacing.subline }}>— ✦ —</div>
-            <h3 style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: fontSizes.paywallHead, fontWeight: 300, color: colors.ink, lineHeight: 1.25, marginBottom: 12 }}>
+            <div style={{ fontFamily: fonts.display, fontSize: fontSizes.eventName, color: colors.hint, marginBottom: 22, letterSpacing: letterSpacing.subline, textAlign: "center" }}>— ✦ —</div>
+            <h3 style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: fontSizes.paywallHead, fontWeight: 300, color: colors.ink, lineHeight: 1.25, marginBottom: 12, textAlign: "center" }}>
               Your calendar continues.
             </h3>
             <p style={{ fontFamily: fonts.ui, fontSize: fontSizes.sub, fontWeight: 300, lineHeight: 1.85, color: colors.muted, letterSpacing: letterSpacing.signIn, marginBottom: 36 }}>
@@ -71,11 +71,31 @@ export default function PaywallGate({
 
             {/* Pricing preview */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
+
+              {/* Monthly card — invisible badge spacer aligns "Monthly" label top
+                  with "Founding Member" label top in the adjacent card */}
               <div style={{ border: `0.5px solid ${colors.rule}`, padding: "22px 16px", textAlign: "center" }}>
+                {/* Invisible spacer matching the badge height + margin in the Founding card */}
+                <div style={{
+                  display:    "inline-block",
+                  fontFamily: fonts.ui,
+                  fontSize:   fontSizes.micro,
+                  fontWeight: 400,
+                  letterSpacing: letterSpacing.chip,
+                  textTransform: "uppercase",
+                  padding:    "3px 10px",
+                  marginBottom: 12,
+                  visibility: "hidden",
+                  border:     "0.5px solid transparent",
+                }}>
+                  &nbsp;
+                </div>
                 <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.micro, fontWeight: 400, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.muted, marginBottom: 10 }}>Monthly</div>
                 <div style={{ fontFamily: fonts.display, fontSize: fontSizes.accessHead, fontWeight: 300, color: colors.ink, lineHeight: 1 }}>$12</div>
                 <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.period, color: colors.muted, marginTop: 4 }}>per month</div>
               </div>
+
+              {/* Founding Member card */}
               <div style={{ border: `0.5px solid ${colors.ink}`, padding: "22px 16px", textAlign: "center" }}>
                 {foundingMembersRemaining > 0 ? (
                   <div style={{ display: "inline-block", fontFamily: fonts.ui, fontSize: fontSizes.micro, fontWeight: 400, letterSpacing: letterSpacing.chip, textTransform: "uppercase", color: colors.ink, border: `0.5px solid ${colors.ink}`, padding: "3px 10px", marginBottom: 12 }}>

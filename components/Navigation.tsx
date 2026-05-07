@@ -114,7 +114,7 @@ export default function Navigation({ session, onSignOut }: Props) {
         </a>
 
         {!isMobile && (
-          <div style={{ display: "flex", gap: 40 }}>
+          <div style={{ display: "flex", gap: 40, alignItems: "center" }}>
             {navLinks.map(({ label, id }) => (
               <a
                 key={label}
