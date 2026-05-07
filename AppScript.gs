@@ -9,6 +9,7 @@ const TIKTOK_URL = "https://www.tiktok.com/@daniblackbeauty"
 const STRIPE_MONTHLY_LINK = "https://buy.stripe.com/test_00wdR898P6O2aRqd7f6Na03"
 const STRIPE_FOUNDING_LINK = "https://buy.stripe.com/test_6oU4gy98P2xM1gQ7MV6Na02"
 const BYPASS_SECRET = "elitespaces2026"
+const EVENTS_SHEET_ID = "1qNNo1tCA4sFjal3qik2Vvf7YZxJgLLy_jMqL0H6-aJY"
 
 const COL = {
     timestamp:            1,
@@ -75,13 +76,16 @@ function doGet(e) {
     return jsonResponse({ result: "ok" })
 }
 
-// ── doPost — handles form submissions, Stripe webhooks, cancellation ──────────
+// ── doPost — handles form submissions, Stripe webhooks, cancellation, events ──
 
 function doPost(e) {
     const data = JSON.parse(e.postData.contents)
 
     if (data.action === "cancel")          return handleCancel(data)
     if (data.action === "stripe_webhook")  return handleStripeWebhook(data)
+    if (data.action === "getEvents")       return handleGetEvents(data)
+    if (data.action === "updateEvents")    return handleUpdateEvents(data)
+    if (data.action === "publishApproved") return handlePublishApproved(data)
 
     return handleNewApplication(data)
 }
@@ -405,6 +409,213 @@ function paymentFailedEmail(firstName) {
             <a href="${SITE_URL}" style="display:inline-block;background:#3d2b20;color:#F7F5F0;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;padding:14px 32px;text-decoration:none;">Update Payment</a>
         </div>
     `)
+}
+
+// ── EVENTS — HELPERS ─────────────────────────────────────────────────────────
+
+/**
+ * Parse a date string from the Events sheet into {date, day, fullDate}.
+ * Handles formats like "May 7, 2026", "May 13-17, 2026", "Opens May 10, 2026 (through...)"
+ */
+function parseEventDate_(dateStr) {
+    if (!dateStr) return { date: null, day: null, fullDate: null }
+    const match = dateStr.match(/([A-Za-z]+)\s+(\d+)(?:[–\-]\d+)?,?\s+(\d{4})/)
+    if (!match) return { date: null, day: null, fullDate: null }
+    const parsed = new Date(`${match[1]} ${match[2]}, ${match[3]}`)
+    if (isNaN(parsed.getTime())) return { date: null, day: null, fullDate: null }
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    return {
+        date:     parsed.getDate(),
+        day:      days[parsed.getDay()],
+        fullDate: parsed
+    }
+}
+
+/**
+ * Auto-assign categories and isFree for a new event based on name + description.
+ */
+function inferCategories_(name, description) {
+    const text = (name + " " + description).toLowerCase()
+    const cats = []
+    if (/gala|benefit|dinner|fundraiser|black.tie/.test(text))                                                                                    cats.push("gala")
+    if (/beauty|skincare|fragrance|makeup|cosmetic|sephora|ulta|lanc[oô]me|fenty|k-beauty|pop-up.*beauty|beauty.*pop-up/.test(text))             cats.push("beauty")
+    if (/pop.?up|activation|launch|opening|showroom|store/.test(text))                                                                           cats.push("popup")
+    if (/art|museum|gallery|exhibition|moma|met |guggenheim|frieze|performance|theater|theatre|ballet|opera|concert/.test(text))                 cats.push("art")
+    if (/industry|trade show|b2b|supplier|professional|summit/.test(text))                                                                       cats.push("industry")
+    const isFree = /\bfree\b|no cost|complimentary|open to (all|public)/.test(text)
+    if (isFree) cats.push("free")
+    return {
+        categories: cats.join(",") || "art",
+        isFree:     isFree
+    }
+}
+
+/**
+ * Read all rows from the Events sheet and return as an array of objects.
+ */
+function getEventsSheetRows_() {
+    try {
+        const ss    = SpreadsheetApp.openById(EVENTS_SHEET_ID)
+        const sheet = ss.getActiveSheet()
+        const data  = sheet.getDataRange().getValues()
+        if (data.length < 2) return []
+        const headers = data[0].map(h => h.toString().trim())
+        return data.slice(1).map((row, i) => {
+            const obj = {}
+            headers.forEach((h, j) => { obj[h] = row[j] })
+            obj._rowIndex = i + 2 // 1-indexed, offset for header
+            return obj
+        })
+    } catch (err) {
+        Logger.log("getEventsSheetRows_ error: " + err.message)
+        return []
+    }
+}
+
+// ── EVENTS — HANDLERS ─────────────────────────────────────────────────────────
+
+/**
+ * getEvents — returns all Published or Approved events for the current calendar month.
+ * Called by the website CalendarView on page load.
+ */
+function handleGetEvents(_data) {
+    const rows         = getEventsSheetRows_()
+    const now          = new Date()
+    const currentMonth = now.getMonth()
+    const currentYear  = now.getFullYear()
+    const events       = []
+    let id = 1
+
+    rows.forEach(row => {
+        const status = (row["Status"] || "").toString().trim()
+        if (status !== "Published" && status !== "Approved") return
+
+        const parsed = parseEventDate_(row["Date"] ? row["Date"].toString() : "")
+        if (!parsed.fullDate) return
+        if (parsed.fullDate.getMonth() !== currentMonth || parsed.fullDate.getFullYear() !== currentYear) return
+
+        const categoriesRaw = (row["Categories"] || "").toString().trim()
+        const isFreeRaw     = row["isFree"]
+        const isFree        = isFreeRaw === true || isFreeRaw === "true" || isFreeRaw === "TRUE"
+
+        let cats = categoriesRaw ? categoriesRaw.split(",").map(c => c.trim()).filter(Boolean) : []
+        if (isFree && !cats.includes("free")) cats.push("free")
+
+        const vibeScore = parseInt((row["Vibe Score"] || "0").toString()) || 0
+
+        events.push({
+            id:          id++,
+            date:        parsed.date,
+            day:         parsed.day,
+            name:        (row["Event Name"]  || "").toString(),
+            venue:       (row["Location"]    || "").toString(),
+            time:        (row["Time"]        || "").toString(),
+            description: (row["Description"] || "").toString(),
+            categories:  cats,
+            isFree:      isFree,
+            vibeScore:   vibeScore
+        })
+    })
+
+    events.sort((a, b) => (a.date || 0) - (b.date || 0))
+
+    return ContentService
+        .createTextOutput(JSON.stringify({ events: events, month: currentMonth + 1, year: currentYear }))
+        .setMimeType(ContentService.MimeType.JSON)
+}
+
+/**
+ * updateEvents — upserts events from the weekly pipeline.
+ * Existing events: updates mutable fields but PRESERVES Status.
+ * New events: appends with Status = "Pending Review".
+ */
+function handleUpdateEvents(data) {
+    const incomingEvents = data.events || []
+    if (!incomingEvents.length) {
+        return ContentService
+            .createTextOutput(JSON.stringify({ result: "no_events" }))
+            .setMimeType(ContentService.MimeType.JSON)
+    }
+
+    const ss           = SpreadsheetApp.openById(EVENTS_SHEET_ID)
+    const sheet        = ss.getActiveSheet()
+    const existingRows = getEventsSheetRows_()
+
+    const existingMap = {}
+    existingRows.forEach(row => {
+        const key = (row["Event Name"] || "").toString().toLowerCase().trim()
+        existingMap[key] = row
+    })
+
+    let added = 0, updated = 0
+
+    incomingEvents.forEach(ev => {
+        const key      = (ev["Event Name"] || "").toLowerCase().trim()
+        const existing = existingMap[key]
+
+        if (existing) {
+            // Update mutable fields only — preserve Status
+            // Column indexes (1-indexed): Time=3, Location=4, Description=5, Notes=9, Categories=10, isFree=11
+            const rowIdx = existing._rowIndex
+            sheet.getRange(rowIdx, 3).setValue(ev["Time"]        || existing["Time"])
+            sheet.getRange(rowIdx, 4).setValue(ev["Location"]    || existing["Location"])
+            sheet.getRange(rowIdx, 5).setValue(ev["Description"] || existing["Description"])
+            if (ev["Notes"])              sheet.getRange(rowIdx, 9).setValue(ev["Notes"])
+            if (ev["Categories"])         sheet.getRange(rowIdx, 10).setValue(ev["Categories"])
+            if (ev["isFree"] !== undefined) sheet.getRange(rowIdx, 11).setValue(ev["isFree"])
+            updated++
+        } else {
+            // New event — append row
+            const inferred = inferCategories_(ev["Event Name"] || "", ev["Description"] || "")
+            const cats   = ev["Categories"] || inferred.categories
+            const isFree = ev["isFree"] !== undefined ? ev["isFree"] : inferred.isFree
+            sheet.appendRow([
+                ev["Event Name"]  || "",
+                ev["Date"]        || "",
+                ev["Time"]        || "",
+                ev["Location"]    || "",
+                ev["Description"] || "",
+                ev["Source URL"]  || "",
+                ev["Vibe Score"]  || "",
+                "Pending Review",
+                ev["Notes"]       || "",
+                cats,
+                isFree
+            ])
+            added++
+        }
+    })
+
+    SpreadsheetApp.flush()
+
+    return ContentService
+        .createTextOutput(JSON.stringify({ result: "success", added: added, updated: updated }))
+        .setMimeType(ContentService.MimeType.JSON)
+}
+
+/**
+ * publishApproved — flips all Approved events to Published.
+ * Called by the monthly publish task on the first Sunday of each month.
+ */
+function handlePublishApproved(_data) {
+    const ss        = SpreadsheetApp.openById(EVENTS_SHEET_ID)
+    const sheet     = ss.getActiveSheet()
+    const rows      = getEventsSheetRows_()
+    const published = []
+
+    rows.forEach(row => {
+        if ((row["Status"] || "").toString().trim() === "Approved") {
+            // Status column is column H (index 8, 1-indexed)
+            sheet.getRange(row._rowIndex, 8).setValue("Published")
+            published.push(row["Event Name"] || "")
+        }
+    })
+
+    SpreadsheetApp.flush()
+
+    return ContentService
+        .createTextOutput(JSON.stringify({ result: "success", published: published, count: published.length }))
+        .setMimeType(ContentService.MimeType.JSON)
 }
 
 // ── TEST FUNCTIONS ────────────────────────────────────────────────────────────
