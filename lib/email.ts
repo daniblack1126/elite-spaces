@@ -20,7 +20,7 @@ function wrap(content: string) {
       <p style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8a8580;margin-bottom:32px;">Elite Spaces &nbsp;·&nbsp; New York City</p>
       ${content}
       <div style="border-top:0.5px solid #C8C5BC;padding-top:24px;margin-top:40px;">
-        <p style="font-size:11px;letter-spacing:0.12em;color:#8a8580;margin:0;">Elite Spaces &nbsp;·&nbsp; elitespaces.nyc</p>
+        <p style="font-size:11px;letter-spacing:0.12em;color:#8a8580;margin:0;">Elite Spaces &nbsp;·&nbsp; <a href="https://elitespaces.nyc" style="color:#8a8580;text-decoration:none;">elitespaces.nyc</a></p>
       </div>
     </div>
   `

@@ -4,7 +4,7 @@
 
 const SHEET_NAME = "Sheet1"
 const ADMIN_EMAIL = "daniblackbeauty@gmail.com"
-const SITE_URL = "https://elite-spaces-two.vercel.app"
+const SITE_URL = "https://elitespaces.nyc"
 const TIKTOK_URL = "https://www.tiktok.com/@daniblackbeauty"
 const STRIPE_MONTHLY_LINK = "https://buy.stripe.com/test_9B66oGfxd4FU7Fe0kt6Na00"
 const STRIPE_FOUNDING_LINK = "https://buy.stripe.com/test_eVq28qcl1c8mgbKebj6Na01"
