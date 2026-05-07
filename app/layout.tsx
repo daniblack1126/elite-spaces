@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   title: "Elite Spaces NYC",
   description:
     "A private social briefing for New York City — curated monthly events for those who move through New York with intention.",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 }
 
 export default function RootLayout({
