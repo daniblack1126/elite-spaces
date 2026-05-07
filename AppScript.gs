@@ -6,8 +6,8 @@ const SHEET_NAME = "Sheet1"
 const ADMIN_EMAIL = "daniblackbeauty@gmail.com"
 const SITE_URL = "https://elitespaces.nyc"
 const TIKTOK_URL = "https://www.tiktok.com/@daniblackbeauty"
-const STRIPE_MONTHLY_LINK = "https://buy.stripe.com/test_9B66oGfxd4FU7Fe0kt6Na00"
-const STRIPE_FOUNDING_LINK = "https://buy.stripe.com/test_eVq28qcl1c8mgbKebj6Na01"
+const STRIPE_MONTHLY_LINK = "https://buy.stripe.com/test_00wdR898P6O2aRqd7f6Na03"
+const STRIPE_FOUNDING_LINK = "https://buy.stripe.com/test_6oU4gy98P2xM1gQ7MV6Na02"
 const BYPASS_SECRET = "elitespaces2026"
 
 const COL = {

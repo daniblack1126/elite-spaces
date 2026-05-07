@@ -91,7 +91,7 @@ export default function PaywallGate({
                   &nbsp;
                 </div>
                 <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.micro, fontWeight: 400, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.muted, marginBottom: 10 }}>Monthly</div>
-                <div style={{ fontFamily: fonts.display, fontSize: fontSizes.accessHead, fontWeight: 300, color: colors.ink, lineHeight: 1 }}>$12</div>
+                <div style={{ fontFamily: fonts.display, fontSize: fontSizes.accessHead, fontWeight: 300, color: colors.ink, lineHeight: 1 }}>$8.99</div>
                 <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.period, color: colors.muted, marginTop: 4 }}>per month</div>
               </div>
 
@@ -105,7 +105,7 @@ export default function PaywallGate({
                   <div style={{ display: "inline-block", fontFamily: fonts.ui, fontSize: fontSizes.micro, fontWeight: 400, letterSpacing: letterSpacing.chip, textTransform: "uppercase", color: colors.muted, border: `0.5px solid ${colors.muted}`, padding: "3px 10px", marginBottom: 12 }}>Sold out</div>
                 )}
                 <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.micro, fontWeight: 400, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.muted, marginBottom: 10 }}>Founding Member</div>
-                <div style={{ fontFamily: fonts.display, fontSize: fontSizes.accessHead, fontWeight: 300, color: colors.ink, lineHeight: 1 }}>$99</div>
+                <div style={{ fontFamily: fonts.display, fontSize: fontSizes.accessHead, fontWeight: 300, color: colors.ink, lineHeight: 1 }}>$86</div>
                 <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.period, color: colors.muted, marginTop: 4 }}>per year</div>
               </div>
             </div>

@@ -907,20 +907,51 @@ function getGreeting() {
 
 // ── CALENDAR VIEW ─────────────────────────────────────────────────────────────
 
+// Dynamic month label derived from current date
+function getCurrentMonthLabel() {
+    const d = new Date()
+    return d.toLocaleString("en-US", { month: "long", year: "numeric" })
+}
+
 export function CalendarView(props) {
     const { isAuthenticated = false } = props
     const [activeFilter, setActiveFilter] = useState("all")
     const [drawerEvent, setDrawerEvent]   = useState(null)
     const [greeting]                      = useState(getGreeting)
     const [session, setSessionState]      = useState(null)
+    const [fetchedEvents, setFetchedEvents] = useState(null) // null = not yet loaded
 
     useEffect(() => {
         setSessionState(getSession())
     }, [])
 
+    // Fetch live events from the Google Apps Script (action: getEvents).
+    // Falls back to hardcoded PREVIEW_EVENTS / FULL_EVENTS arrays while loading
+    // or if the Apps Script hasn't been updated yet.
+    useEffect(() => {
+        postToScriptWithResponse({ action: "getEvents" })
+            .then((data) => {
+                if (data && Array.isArray(data.events) && data.events.length > 0) {
+                    setFetchedEvents(data.events)
+                } else {
+                    setFetchedEvents([]) // loaded but empty — will fall back
+                }
+            })
+            .catch(() => {
+                setFetchedEvents([]) // fetch failed — fall back to hardcoded
+            })
+    }, [])
+
     const authed = isAuthenticated || !!session
-    const events = authed ? FULL_EVENTS : PREVIEW_EVENTS
     const firstName = session?.firstName || props.firstName || ""
+
+    // Use fetched events once loaded; fall back to hardcoded arrays until then
+    const liveEvents = fetchedEvents !== null && fetchedEvents.length > 0
+        ? fetchedEvents
+        : null
+    const events = liveEvents
+        ? (authed ? liveEvents : liveEvents.slice(0, 8))
+        : (authed ? FULL_EVENTS : PREVIEW_EVENTS)
 
     const filtered = activeFilter === "all"
         ? events
@@ -960,7 +991,7 @@ export function CalendarView(props) {
                     </div>
                     <div>
                         <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.hint, marginBottom: 12, textAlign: "right" }}>
-                            May 2026
+                            {getCurrentMonthLabel()}
                         </div>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
                             {FILTERS.map((f) => (
@@ -993,7 +1024,7 @@ export function CalendarView(props) {
                         onMouseLeave={(e) => (e.currentTarget.style.color = colors.hint)}
                         style={{ textAlign: "center", padding: "32px 0 8px", fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.hint, cursor: "pointer", transition: `color ${trans.fast}` }}
                     >
-                        — 23 more events this month —
+                        — {Math.max(0, (liveEvents || FULL_EVENTS).length - 8)} more events this month —
                     </div>
                 )}
             </div>
@@ -1025,8 +1056,13 @@ export function CalendarView(props) {
                             <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.note, fontWeight: 300, color: colors.hint, letterSpacing: letterSpacing.signIn }}>
                                 {drawerEvent.time}
                             </div>
+                            {drawerEvent.description && (
+                                <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.body, fontWeight: 300, color: colors.body, letterSpacing: letterSpacing.body, lineHeight: 1.75, marginTop: 4 }}>
+                                    {drawerEvent.description}
+                                </div>
+                            )}
                             <a
-                                href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(drawerEvent.name)}&details=${encodeURIComponent(drawerEvent.venue)}`}
+                                href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(drawerEvent.name)}&details=${encodeURIComponent(drawerEvent.description || drawerEvent.venue)}&location=${encodeURIComponent(drawerEvent.venue)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 400, letterSpacing: letterSpacing.button, textTransform: "uppercase", color: colors.ink, borderBottom: `0.5px solid ${colors.ink}`, paddingBottom: 1, textDecoration: "none", display: "inline-block", marginTop: 12 }}

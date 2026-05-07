@@ -52,15 +52,15 @@ export function paymentEmail(firstName: string, email: string) {
     <p style="font-size:14px;font-weight:300;line-height:1.9;color:#5a5550;margin-bottom:32px;">Both plans include full access to the Elite Spaces calendar. No ads, ever.</p>
     <div style="border:0.5px solid #C8C5BC;padding:24px;margin-bottom:16px;text-align:center;">
       <p style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#8a8580;margin-bottom:8px;">Monthly</p>
-      <p style="font-size:32px;font-weight:300;color:#3d2b20;margin-bottom:2px;">$12<span style="font-size:14px;color:#8a8580;">/mo</span></p>
+      <p style="font-size:32px;font-weight:300;color:#3d2b20;margin-bottom:2px;">$8.99<span style="font-size:14px;color:#8a8580;">/mo</span></p>
       <p style="font-size:11px;color:#8a8580;margin-bottom:20px;">Billed monthly · cancel anytime</p>
       <a href="${MONTHLY_LINK}?prefilled_email=${encodeURIComponent(email)}" style="display:inline-block;background:#3d2b20;color:#F7F5F0;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;padding:14px 32px;text-decoration:none;">Get Monthly Access</a>
     </div>
     <div style="border:0.5px solid #3d2b20;padding:24px;text-align:center;background:#faf9f6;">
       <p style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#8a8580;margin-bottom:4px;">Founding Member</p>
       <p style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#3d2b20;margin-bottom:12px;">— Limited availability —</p>
-      <p style="font-size:32px;font-weight:300;color:#3d2b20;margin-bottom:2px;">$99<span style="font-size:14px;color:#8a8580;">/yr</span></p>
-      <p style="font-size:11px;color:#8a8580;margin-bottom:4px;">Billed annually · save $45 vs monthly</p>
+      <p style="font-size:32px;font-weight:300;color:#3d2b20;margin-bottom:2px;">$86<span style="font-size:14px;color:#8a8580;">/yr</span></p>
+      <p style="font-size:11px;color:#8a8580;margin-bottom:4px;">Billed annually · save $22 vs monthly</p>
       <p style="font-size:11px;color:#8a8580;margin-bottom:20px;">Your rate is locked in forever, even as prices increase</p>
       <a href="${FOUNDING_LINK}?prefilled_email=${encodeURIComponent(email)}" style="display:inline-block;background:#3d2b20;color:#F7F5F0;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;padding:14px 32px;text-decoration:none;">Become a Founding Member</a>
     </div>
