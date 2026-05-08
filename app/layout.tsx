@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Elite Spaces NYC",
+  title: "Elite Spaces NYC — Curated Monthly Events for New York",
   description:
     "A private social briefing for New York City — curated monthly events for those who move through New York with intention.",
   icons: {
@@ -10,17 +10,26 @@ export const metadata: Metadata = {
     apple: "/icon.svg",
   },
   openGraph: {
-    title:       "Elite Spaces NYC",
+    title:       "Elite Spaces NYC — Curated Monthly Events for New York",
     description: "A private social briefing for New York City — curated monthly events for those who move through New York with intention.",
     url:         "https://elitespaces.nyc",
     siteName:    "Elite Spaces NYC",
     locale:      "en_US",
     type:        "website",
+    images: [
+      {
+        url:    "https://elitespaces.nyc/opengraph-image",
+        width:  1200,
+        height: 630,
+        alt:    "Elite Spaces NYC",
+      },
+    ],
   },
   twitter: {
     card:        "summary_large_image",
-    title:       "Elite Spaces NYC",
+    title:       "Elite Spaces NYC — Curated Monthly Events for New York",
     description: "A private social briefing for New York City — curated monthly events for those who move through New York with intention.",
+    images:      ["https://elitespaces.nyc/opengraph-image"],
   },
 }
 
