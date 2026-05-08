@@ -9,6 +9,19 @@ export const metadata: Metadata = {
     icon: "/icon.svg",
     apple: "/icon.svg",
   },
+  openGraph: {
+    title:       "Elite Spaces NYC",
+    description: "A private social briefing for New York City — curated monthly events for those who move through New York with intention.",
+    url:         "https://elitespaces.nyc",
+    siteName:    "Elite Spaces NYC",
+    locale:      "en_US",
+    type:        "website",
+  },
+  twitter: {
+    card:        "summary_large_image",
+    title:       "Elite Spaces NYC",
+    description: "A private social briefing for New York City — curated monthly events for those who move through New York with intention.",
+  },
 }
 
 export default function RootLayout({

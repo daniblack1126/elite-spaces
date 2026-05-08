@@ -15,7 +15,7 @@
 
 // ── STEP 1: Add this constant near the top of your script ────────────────────
 
-const EVENTS_SHEET_ID = "1AN3k5Rc_f-LN9nQKWzn--oboGqIeTf3CCK_XiOwdkgY";
+const EVENTS_SHEET_ID = "1qNNo1tCA4sFjal3qik2Vvf7YZxJgLLy_jMqL0H6-aJY";
 
 // ── STEP 2: Add these helper functions anywhere in your script ────────────────
 
