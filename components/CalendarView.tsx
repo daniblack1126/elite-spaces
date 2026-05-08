@@ -206,7 +206,7 @@ export default function CalendarView({ session }: Props) {
 
             {/* ── Mobile filter layout: 4 top, 3 bottom ── */}
             {isMobile ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%", paddingTop: 1 }}>
                 {/* Row 1: first 4 filters */}
                 <div style={{ display: "flex", gap: 8 }}>
                   {FILTERS.slice(0, 4).map((f) => (
