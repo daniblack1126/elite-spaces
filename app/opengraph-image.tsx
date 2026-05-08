@@ -17,42 +17,63 @@ export default function OGImage() {
           alignItems:     "center",
           justifyContent: "center",
           background:     "#3d2b20",
+          gap:            0,
         }}
       >
-        {/* Martini glass */}
-        <svg width="110" height="110" viewBox="0 0 100 100" style={{ marginBottom: 36 }}>
-          <polygon points="18,18 82,18 58,58 42,58" fill="#F7F5F0" />
-          <rect x="47" y="58" width="6" height="20" fill="#F7F5F0" />
-          <rect x="30" y="78" width="40" height="5" fill="#F7F5F0" />
-          <text x="50" y="44" font-family="serif" font-size="18" fill="#3d2b20" text-anchor="middle" dominant-baseline="middle">ES</text>
-        </svg>
-
-        {/* Site name */}
+        {/* Eyebrow */}
         <div
           style={{
-            fontSize:      68,
+            display:       "flex",
+            fontSize:      18,
+            color:         "#8a8580",
+            letterSpacing: "0.3em",
+            fontFamily:    "sans-serif",
+            textTransform: "uppercase",
+            marginBottom:  32,
+          }}
+        >
+          New York City
+        </div>
+
+        {/* Main title */}
+        <div
+          style={{
+            display:       "flex",
+            fontSize:      96,
             fontWeight:    300,
             color:         "#F7F5F0",
-            letterSpacing: "0.06em",
-            marginBottom:  16,
+            letterSpacing: "0.04em",
             fontFamily:    "serif",
+            marginBottom:  24,
           }}
         >
           Elite Spaces
         </div>
 
-        {/* Subline */}
+        {/* Divider */}
         <div
           style={{
+            display:         "flex",
+            width:           80,
+            height:          0.5,
+            background:      "#8a8580",
+            marginBottom:    24,
+          }}
+        />
+
+        {/* Tagline */}
+        <div
+          style={{
+            display:       "flex",
             fontSize:      22,
-            fontWeight:    400,
+            fontWeight:    300,
             color:         "#8a8580",
-            letterSpacing: "0.22em",
+            letterSpacing: "0.15em",
             fontFamily:    "sans-serif",
             textTransform: "uppercase",
           }}
         >
-          New York City
+          elitespaces.nyc
         </div>
       </div>
     ),
