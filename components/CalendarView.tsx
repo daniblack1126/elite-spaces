@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
 import { colors, fonts, fontSizes, letterSpacing, spacing, trans, anchors, MOBILE_BP } from "@/lib/tokens"
 import { getGreeting, scrollTo } from "@/lib/utils"
-import { PREVIEW_EVENTS, FULL_EVENTS, FILTERS, CALENDAR_MONTH, CALENDAR_YEAR, type Event } from "@/lib/events"
+import { FILTERS, CALENDAR_MONTH, CALENDAR_YEAR, type Event } from "@/lib/events"
 import type { Session } from "@/lib/types"
 
 // ── ICS DOWNLOAD ──────────────────────────────────────────────────────────────
@@ -48,6 +48,47 @@ function downloadICS(event: Event) {
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
+}
+
+// ── API EVENT MAPPING ─────────────────────────────────────────────────────────
+
+const PREVIEW_COUNT = 5
+
+const MONTH_NAMES = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December",
+]
+const DAY_ABBREVS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+
+function parseDateField(dateStr: string): { date: number; day: string } {
+  // handles "May 9, 2026", "May 9-10, 2026", "May 14-20, 2026", "June 27-28, 2026"
+  const match = dateStr.match(/([A-Za-z]+)\s+(\d+)/)
+  if (!match) return { date: 1, day: "?" }
+  const monthIdx = MONTH_NAMES.findIndex((m) =>
+    m.toLowerCase().startsWith(match[1].toLowerCase())
+  )
+  const dayNum = parseInt(match[2], 10)
+  const d = new Date(CALENDAR_YEAR, monthIdx >= 0 ? monthIdx : CALENDAR_MONTH, dayNum)
+  return { date: dayNum, day: DAY_ABBREVS[d.getDay()] }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapApiEvent(raw: any, index: number): Event {
+  const { date, day } = parseDateField(raw["Date"] || "")
+  const catStr: string = raw["Categories"] || ""
+  const categories = catStr.split(",").map((c) => c.trim()).filter(Boolean)
+  const isFree = raw["isFree"] === "true" || raw["isFree"] === true
+  return {
+    id:          index + 100,           // offset avoids collision with any static ids
+    date,
+    day,
+    name:        raw["Event Name"]  || "",
+    venue:       raw["Location"]    || "",
+    time:        raw["Time"]        || "",
+    categories,
+    isFree,
+    description: raw["Description"] || "",
+  }
 }
 
 // ── CALENDAR ROW ──────────────────────────────────────────────────────────────
@@ -110,6 +151,8 @@ export default function CalendarView({ session }: Props) {
   const [activeFilter, setActiveFilter] = useState("all")
   const [drawerEvent,  setDrawerEvent]  = useState<Event | null>(null)
   const [isMobile,     setIsMobile]     = useState(false)
+  const [allEvents,    setAllEvents]    = useState<Event[]>([])
+  const [eventsLoaded, setEventsLoaded] = useState(false)
   const greeting = getGreeting()
 
   useEffect(() => {
@@ -119,14 +162,33 @@ export default function CalendarView({ session }: Props) {
     return () => window.removeEventListener("resize", check)
   }, [])
 
+  // Fetch events from the Google Sheet via the server-side proxy
+  useEffect(() => {
+    fetch("/api/events")
+      .then((r) => r.json())
+      .then((data) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const raw: any[] = Array.isArray(data?.events) ? data.events : []
+        const mapped = raw
+          // only show Published events
+          .filter((e) => !e["Status"] || e["Status"] === "Published")
+          .map(mapApiEvent)
+          .sort((a, b) => a.date - b.date)
+        setAllEvents(mapped)
+        setEventsLoaded(true)
+      })
+      .catch(() => setEventsLoaded(true))
+  }, [])
+
   const calDate    = new Date(CALENDAR_YEAR, CALENDAR_MONTH, 1)
   const monthLabel = calDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })
   const monthName  = calDate.toLocaleDateString("en-US", { month: "long" })
 
-  const events   = session ? FULL_EVENTS : PREVIEW_EVENTS
+  const visibleEvents = session ? allEvents : allEvents.slice(0, PREVIEW_COUNT)
+  const moreCount     = Math.max(0, allEvents.length - PREVIEW_COUNT)
   const filtered = (activeFilter === "all"
-    ? events
-    : events.filter((e) => e.categories.includes(activeFilter))
+    ? visibleEvents
+    : visibleEvents.filter((e) => e.categories.includes(activeFilter))
   ).sort((a, b) => a.date - b.date)
 
   const chipStyle = (active: boolean): React.CSSProperties => ({
@@ -257,20 +319,30 @@ export default function CalendarView({ session }: Props) {
 
         {/* Event rows */}
         <div style={{ borderTop: `0.5px solid ${colors.rule}` }}>
+          {!eventsLoaded && (
+            <div style={{ padding: "40px 0", textAlign: "center", fontFamily: fonts.ui, fontSize: fontSizes.note, fontWeight: 300, letterSpacing: letterSpacing.body, color: colors.hint }}>
+              Loading events…
+            </div>
+          )}
+          {eventsLoaded && filtered.length === 0 && (
+            <div style={{ padding: "40px 0", textAlign: "center", fontFamily: fonts.ui, fontSize: fontSizes.note, fontWeight: 300, letterSpacing: letterSpacing.body, color: colors.hint }}>
+              No events found.
+            </div>
+          )}
           {filtered.map((event, index) => (
             <CalRow key={event.id} event={event} index={index} onClick={() => setDrawerEvent(event)} />
           ))}
         </div>
 
         {/* Paywall nudge */}
-        {!session && (
+        {!session && moreCount > 0 && (
           <div
             onClick={() => scrollTo(anchors.paywallGate)}
             onMouseEnter={(e) => (e.currentTarget.style.color = colors.ink)}
             onMouseLeave={(e) => (e.currentTarget.style.color = colors.hint)}
             style={{ textAlign: "center", padding: "32px 0 8px", fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.hint, cursor: "pointer", transition: `color ${trans.fast}` }}
           >
-            — 23 more events this month —
+            — {moreCount} more event{moreCount !== 1 ? "s" : ""} this month —
           </div>
         )}
       </div>
