@@ -8,7 +8,7 @@ export async function GET() {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify({ action: "getEvents" }),
-      next:    { revalidate: 3600 }, // cache for 1 hour
+      cache:   "no-store",
     })
 
     if (!res.ok) {
