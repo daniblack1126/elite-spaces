@@ -51,45 +51,12 @@ function downloadICS(event: Event) {
 }
 
 // ── API EVENT MAPPING ─────────────────────────────────────────────────────────
+// The Apps Script handleGetEvents already returns events in the correct shape:
+// { id, date (number), day (string), name, venue, time, description,
+//   categories (string[]), isFree (boolean), vibeScore }
+// No client-side mapping needed — just cast and use.
 
 const PREVIEW_COUNT = 5
-
-const MONTH_NAMES = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
-]
-const DAY_ABBREVS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
-
-function parseDateField(dateStr: string): { date: number; day: string } {
-  // handles "May 9, 2026", "May 9-10, 2026", "May 14-20, 2026", "June 27-28, 2026"
-  const match = dateStr.match(/([A-Za-z]+)\s+(\d+)/)
-  if (!match) return { date: 1, day: "?" }
-  const monthIdx = MONTH_NAMES.findIndex((m) =>
-    m.toLowerCase().startsWith(match[1].toLowerCase())
-  )
-  const dayNum = parseInt(match[2], 10)
-  const d = new Date(CALENDAR_YEAR, monthIdx >= 0 ? monthIdx : CALENDAR_MONTH, dayNum)
-  return { date: dayNum, day: DAY_ABBREVS[d.getDay()] }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapApiEvent(raw: any, index: number): Event {
-  const { date, day } = parseDateField(raw["Date"] || "")
-  const catStr: string = raw["Categories"] || ""
-  const categories = catStr.split(",").map((c) => c.trim()).filter(Boolean)
-  const isFree = raw["isFree"] === "true" || raw["isFree"] === true
-  return {
-    id:          index + 100,           // offset avoids collision with any static ids
-    date,
-    day,
-    name:        raw["Event Name"]  || "",
-    venue:       raw["Location"]    || "",
-    time:        raw["Time"]        || "",
-    categories,
-    isFree,
-    description: raw["Description"] || "",
-  }
-}
 
 // ── CALENDAR ROW ──────────────────────────────────────────────────────────────
 
@@ -162,19 +129,15 @@ export default function CalendarView({ session }: Props) {
     return () => window.removeEventListener("resize", check)
   }, [])
 
-  // Fetch events from the Google Sheet via the server-side proxy
+  // Fetch events from the Google Sheet via the server-side proxy.
+  // The Apps Script already filters by Published/Approved status and current month,
+  // parses dates, and sorts — so we use the response as-is.
   useEffect(() => {
     fetch("/api/events")
       .then((r) => r.json())
       .then((data) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const raw: any[] = Array.isArray(data?.events) ? data.events : []
-        const mapped = raw
-          // only show Published events
-          .filter((e) => !e["Status"] || e["Status"] === "Published")
-          .map(mapApiEvent)
-          .sort((a, b) => a.date - b.date)
-        setAllEvents(mapped)
+        const events: Event[] = Array.isArray(data?.events) ? data.events : []
+        setAllEvents(events)
         setEventsLoaded(true)
       })
       .catch(() => setEventsLoaded(true))
