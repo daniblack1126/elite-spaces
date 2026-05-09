@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Navigation from "./Navigation"
 import Hero from "./Hero"
 import AccessForm from "./AccessForm"
@@ -22,7 +22,18 @@ export default function PageClient({
   stripeMonthlyLink,
   stripeFoundingLink,
 }: Props) {
-  const [session, setSession] = useState<Session | null>(initialSession)
+  const [session,    setSession]    = useState<Session | null>(initialSession)
+  const [eventCount, setEventCount] = useState<number | undefined>(undefined)
+
+  useEffect(() => {
+    fetch("/api/events")
+      .then((r) => r.json())
+      .then((data) => {
+        const count = Array.isArray(data?.events) ? data.events.length : undefined
+        setEventCount(count)
+      })
+      .catch(() => {})
+  }, [])
 
   const handleSignOut = async () => {
     await fetch("/api/signout", { method: "POST" })
@@ -34,8 +45,8 @@ export default function PageClient({
     <>
       <Navigation session={session} onSignOut={handleSignOut} />
       <Hero session={session} onSessionChange={setSession} />
-      <CalendarView session={session} />
-      {!session && <PaywallGate />}
+      <CalendarView session={session} eventCount={eventCount} />
+      {!session && <PaywallGate eventCount={eventCount} />}
       {!session && <AccessForm />}
       {!session && <LoginForm />}
       {session && <MemberFooter session={session} onSignOut={handleSignOut} />}

@@ -111,10 +111,11 @@ function CalRow({ event, index, onClick }: { event: Event; index: number; onClic
 // ── CALENDAR VIEW ─────────────────────────────────────────────────────────────
 
 interface Props {
-  session: Session | null
+  session:    Session | null
+  eventCount?: number
 }
 
-export default function CalendarView({ session }: Props) {
+export default function CalendarView({ session, eventCount }: Props) {
   const [activeFilter, setActiveFilter] = useState("all")
   const [drawerEvent,  setDrawerEvent]  = useState<Event | null>(null)
   const [isMobile,     setIsMobile]     = useState(false)
@@ -147,8 +148,9 @@ export default function CalendarView({ session }: Props) {
   const monthLabel = calDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })
   const monthName  = calDate.toLocaleDateString("en-US", { month: "long" })
 
+  const totalCount    = eventCount ?? allEvents.length
   const visibleEvents = session ? allEvents : allEvents.slice(0, PREVIEW_COUNT)
-  const moreCount     = Math.max(0, allEvents.length - PREVIEW_COUNT)
+  const moreCount     = Math.max(0, totalCount - PREVIEW_COUNT)
   const filtered = (activeFilter === "all"
     ? visibleEvents
     : visibleEvents.filter((e) => e.categories.includes(activeFilter))

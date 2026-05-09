@@ -8,10 +8,12 @@ import { PAYWALL_PREVIEW } from "@/lib/events"
 
 interface Props {
   foundingMembersRemaining?: number
+  eventCount?: number
 }
 
 export default function PaywallGate({
   foundingMembersRemaining = 14,
+  eventCount,
 }: Props) {
   const [isMobile,     setIsMobile]     = useState(false)
 
@@ -66,7 +68,10 @@ export default function PaywallGate({
               Your calendar continues.
             </h3>
             <p style={{ fontFamily: fonts.ui, fontSize: fontSizes.sub, fontWeight: 300, lineHeight: 1.85, color: colors.muted, letterSpacing: letterSpacing.signIn, marginBottom: 36 }}>
-              Unlock all 31 events and monthly updates. Cancel anytime.
+              {eventCount
+                ? `Unlock all ${eventCount} events and monthly updates. Cancel anytime.`
+                : "Unlock the full calendar and monthly updates. Cancel anytime."
+              }
             </p>
 
             {/* Pricing preview */}
