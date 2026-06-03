@@ -61,7 +61,7 @@ export const spacing = {
   innerMaxWidth:     780,
   accessMaxWidth:    960,
   paywallCardMax:    460,
-  navHeight:         64,
+  navHeight:         56,
 }
 
 export const trans = {

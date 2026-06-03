@@ -38,7 +38,7 @@ export default function SocialProof() {
       ref={ref}
       style={{
         background: colors.cream,
-        padding: isMobile ? "36px 24px 40px" : "40px 60px 48px",
+        padding: isMobile ? "28px 24px 32px" : "32px 60px 40px",
         borderTop: `0.5px solid ${colors.rule}`,
       }}
     >
@@ -58,7 +58,7 @@ export default function SocialProof() {
             textTransform: "uppercase",
             color: colors.muted,
             textAlign: "center",
-            marginBottom: 24,
+            marginBottom: 18,
           }}
         >
           A glimpse at what members discovered last month
