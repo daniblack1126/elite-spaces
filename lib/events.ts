@@ -1,8 +1,8 @@
-// ── UPDATE THESE TWO LINES EACH MONTH ─────────────────────────────────────────
-export const CALENDAR_MONTH = 4   // 0-indexed: 0 = Jan, 4 = May, 5 = June, etc.
-export const CALENDAR_YEAR  = 2026
-// ──────────────────────────────────────────────────────────────────────────────
-
+// ── AUTOMATICALLY UPDATES TO CURRENT MONTH & YEAR ─────────────────────────
+const now = new Date();
+export const CALENDAR_MONTH = now.getMonth()   // 0-indexed: 0 = Jan, 4 = May, 5 = June, etc.
+export const CALENDAR_YEAR  = now.getFullYear()
+// ──────────────────────────────────────────────────────────────────────────
 export interface Event {
   id:          number
   date:        number
