@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { colors, fonts, fontSizes, letterSpacing, trans, anchors, btnDark, MOBILE_BP } from "@/lib/tokens"
 import { scrollTo } from "@/lib/utils"
 import type { Session } from "@/lib/types"
+import { scrollTo, getCurrentMonthYear } from "@/lib/utils"
 
 interface Props {
   session:         Session | null
@@ -101,7 +102,7 @@ export default function Hero({ session, onSessionChange }: Props) {
           variants={item}
           style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.hint, marginBottom: 28 }}
         >
-          May 2026 &nbsp;·&nbsp; Curated for you
+          {getCurrentMonthYear()} &nbsp;·&nbsp; Curated for you
         </motion.div>
 
         <motion.div
