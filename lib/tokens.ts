@@ -61,7 +61,7 @@ export const spacing = {
   innerMaxWidth:     780,
   accessMaxWidth:    960,
   paywallCardMax:    460,
-  navHeight:         64,
+  navHeight:         56,
 }
 
 export const trans = {
@@ -86,10 +86,10 @@ export const btnDark: React.CSSProperties = {
   color:          colors.cream,
   fontFamily:     fonts.ui,
   fontSize:       fontSizes.label,
-  fontWeight:     400,
+  fontWeight:     500,
   letterSpacing:  letterSpacing.button,
   textTransform:  "uppercase",
-  padding:        "15px 40px",
+  padding:        "16px 48px",
   border:         "none",
   borderRadius:   0,
   cursor:         "pointer",

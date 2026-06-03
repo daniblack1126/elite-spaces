@@ -70,7 +70,7 @@ export default function Hero({ session, onSessionChange }: Props) {
   return (
     <section
       id={anchors.hero}
-      style={{ background: colors.cream, padding: isMobile ? "80px 24px 60px" : "120px 60px 100px", textAlign: "center", fontFamily: fonts.ui }}
+      style={{ background: colors.cream, padding: isMobile ? "48px 24px 36px" : "56px 60px 40px", textAlign: "center", fontFamily: fonts.ui }}
     >
       {verifying && (
         <div style={{ position: "fixed", inset: 0, background: colors.cream, zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fonts.ui, fontSize: fontSizes.label, letterSpacing: letterSpacing.button, textTransform: "uppercase", color: colors.muted }}>
@@ -82,14 +82,14 @@ export default function Hero({ session, onSessionChange }: Props) {
 
         <motion.div
           variants={item}
-          style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.eyebrow, textTransform: "uppercase", color: colors.muted, marginBottom: 36 }}
+          style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.eyebrow, textTransform: "uppercase", color: colors.muted, marginBottom: 20 }}
         >
           A private social briefing &nbsp;·&nbsp; New York City
         </motion.div>
 
         <motion.h1
           variants={item}
-          style={{ fontFamily: fonts.display, fontSize: isMobile ? 36 : fontSizes.heroHead, lineHeight: 1.08, color: colors.ink, marginBottom: 18, textAlign: "center" }}
+          style={{ fontFamily: fonts.display, fontSize: isMobile ? 34 : fontSizes.heroHead, lineHeight: 1.08, color: colors.ink, marginBottom: 12, textAlign: "center" }}
         >
           <span style={{ fontStyle: "italic", fontWeight: 300, display: "block" }}>
             {displayName}{firstName ? "'s" : ""}
@@ -99,21 +99,21 @@ export default function Hero({ session, onSessionChange }: Props) {
 
         <motion.div
           variants={item}
-          style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.hint, marginBottom: 44 }}
+          style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.subline, textTransform: "uppercase", color: colors.hint, marginBottom: 28 }}
         >
           May 2026 &nbsp;·&nbsp; Curated for you
         </motion.div>
 
         <motion.div
           variants={item}
-          style={{ width: 40, height: 0.5, background: colors.hint, margin: "0 auto 44px" }}
+          style={{ width: 40, height: 0.5, background: colors.hint, margin: "0 auto 28px" }}
         />
 
         <motion.p
           variants={item}
-          style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: fontSizes.description, fontWeight: 300, lineHeight: 1.75, color: colors.body, maxWidth: 500, margin: "0 auto 52px" }}
+          style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: fontSizes.description, fontWeight: 300, lineHeight: 1.7, color: colors.body, maxWidth: 520, margin: "0 auto 32px" }}
         >
-          New York has no shortage of events. Elite Spaces finds the ones that are actually worth your time — galas, cultural openings, industry moments, and the hidden free experiences the city keeps to itself. Curated monthly, delivered personally.
+          Everyone asks how you always know about the best events. This is how. Galas, cultural openings, industry moments, and the hidden gems the city keeps to itself — curated monthly, delivered personally.
         </motion.p>
 
         <motion.div variants={item}>
@@ -138,8 +138,8 @@ export default function Hero({ session, onSessionChange }: Props) {
               >
                 Request Access
               </a>
-              <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.note, fontWeight: 300, letterSpacing: letterSpacing.heroNote, color: colors.hint, marginTop: 18 }}>
-                Currently accepting new members &nbsp;·&nbsp; Approval within 1 week
+              <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.note, fontWeight: 300, letterSpacing: letterSpacing.heroNote, color: colors.hint, marginTop: 12 }}>
+                Only 50 spots remaining this month
               </div>
             </>
           )}
