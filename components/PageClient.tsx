@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Navigation from "./Navigation"
 import Hero from "./Hero"
+import SocialProof from "./SocialProof"
 import AccessForm from "./AccessForm"
 import LoginForm from "./LoginForm"
 import CalendarView from "./CalendarView"
@@ -45,6 +46,7 @@ export default function PageClient({
     <>
       <Navigation session={session} onSignOut={handleSignOut} />
       <Hero session={session} onSessionChange={setSession} />
+      {!session && <SocialProof />}
       <CalendarView session={session} eventCount={eventCount} />
       {!session && <PaywallGate eventCount={eventCount} />}
       {!session && <AccessForm />}

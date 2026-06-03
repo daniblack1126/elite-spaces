@@ -111,9 +111,9 @@ export default function Hero({ session, onSessionChange }: Props) {
 
         <motion.p
           variants={item}
-          style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: fontSizes.description, fontWeight: 300, lineHeight: 1.75, color: colors.body, maxWidth: 500, margin: "0 auto 52px" }}
+          style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: fontSizes.description, fontWeight: 300, lineHeight: 1.75, color: colors.body, maxWidth: 520, margin: "0 auto 52px" }}
         >
-          New York has no shortage of events. Elite Spaces finds the ones that are actually worth your time — galas, cultural openings, industry moments, and the hidden free experiences the city keeps to itself. Curated monthly, delivered personally.
+          Everyone asks how you always know about the best events. This is how. Galas, cultural openings, industry moments, and the hidden gems the city keeps to itself — curated monthly, delivered personally.
         </motion.p>
 
         <motion.div variants={item}>
@@ -139,7 +139,7 @@ export default function Hero({ session, onSessionChange }: Props) {
                 Request Access
               </a>
               <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.note, fontWeight: 300, letterSpacing: letterSpacing.heroNote, color: colors.hint, marginTop: 18 }}>
-                Currently accepting new members &nbsp;·&nbsp; Approval within 1 week
+                Only 50 spots remaining this month
               </div>
             </>
           )}

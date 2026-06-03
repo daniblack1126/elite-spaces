@@ -17,10 +17,8 @@ export default function AccessForm() {
   const [submitted,     setSubmitted]     = useState(false)
   const [submittedName, setSubmittedName] = useState("")
   const [firstName,     setFirstName]     = useState("")
-  const [lastName,      setLastName]      = useState("")
   const [email,         setEmail]         = useState("")
   const [source,        setSource]        = useState("")
-  const [handle,        setHandle]        = useState("")
   const [focused,       setFocused]       = useState("")
   const [loading,       setLoading]       = useState(false)
 
@@ -39,7 +37,7 @@ export default function AccessForm() {
         method:  "POST",
         mode:    "no-cors",
         headers: { "Content-Type": "text/plain" },
-        body:    JSON.stringify({ firstName, lastName, email, source, handle }),
+        body:    JSON.stringify({ firstName, lastName: "", email, source, handle: "" }),
       })
     } catch (err) {
       console.error("Apply error:", err)
@@ -65,7 +63,6 @@ export default function AccessForm() {
 
   const fields = [
     { name: "firstName", label: "Your first name", type: "text",  placeholder: "First name",    value: firstName, setter: setFirstName, required: true  },
-    { name: "lastName",  label: "Your last name",  type: "text",  placeholder: "Last name",      value: lastName,  setter: setLastName,  required: false },
     { name: "email",     label: "Email address",   type: "email", placeholder: "your@email.com", value: email,     setter: setEmail,     required: true  },
   ]
 
@@ -85,21 +82,24 @@ export default function AccessForm() {
       >
         <motion.div variants={fadeIn}>
           <h2 style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: fontSizes.accessHead, fontWeight: 300, color: colors.ink, lineHeight: 1.2, marginBottom: 18 }}>
-            Join the<br />inner circle.
+            Be the one who<br />always knows.
           </h2>
-          <p style={{ fontFamily: fonts.ui, fontSize: fontSizes.body, fontWeight: 300, lineHeight: 1.9, color: colors.body, letterSpacing: letterSpacing.body, marginBottom: 36 }}>
-            Elite Spaces is a curated monthly briefing for those who move through New York with intention. We review each application before sending your personal access link.
+          <p style={{ fontFamily: fonts.ui, fontSize: fontSizes.body, fontWeight: 300, lineHeight: 1.9, color: colors.body, letterSpacing: letterSpacing.body, marginBottom: 28 }}>
+            Join 2,400+ New Yorkers who never miss the events that matter. Apply in 30 seconds — we review each request personally.
           </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
             {[
-              "— Sourced from hundreds of publications monthly",
-              "— Updated the first Sunday of each month",
-              "— No advertising. Ever.",
+              "Sourced from 100+ publications monthly",
+              "Updated the first Sunday of each month",
+              "No advertising. No spam. Ever.",
             ].map((line, i) => (
-              <div key={i} style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.chip, textTransform: "uppercase", color: colors.hint }}>
-                {line}
+              <div key={i} style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.chip, textTransform: "uppercase", color: colors.hint, display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ color: colors.muted }}>+</span> {line}
               </div>
             ))}
+          </div>
+          <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.note, fontWeight: 400, letterSpacing: letterSpacing.heroNote, color: colors.ink, padding: "10px 14px", background: colors.cream, display: "inline-block" }}>
+            Only 50 spots remaining this month
           </div>
         </motion.div>
 
@@ -126,7 +126,7 @@ export default function AccessForm() {
                 </div>
               ))}
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <label style={labelStyle as React.CSSProperties}>How did you find us?</label>
+                <label style={labelStyle as React.CSSProperties}>How did you hear about us?</label>
                 <select
                   style={{ ...inputStyle("source"), color: source ? colors.ink : colors.hint, backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23C8C5BC' stroke-width='0.5'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center", cursor: "pointer" }}
                   value={source}
@@ -141,18 +141,6 @@ export default function AccessForm() {
                   <option value="instagram">Instagram</option>
                   <option value="other">Other</option>
                 </select>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <label style={labelStyle as React.CSSProperties}>What&apos;s your handle? (Instagram / TikTok)</label>
-                <input
-                  style={inputStyle("handle")}
-                  type="text"
-                  placeholder="@yourhandle"
-                  value={handle}
-                  onChange={(e) => setHandle(e.target.value)}
-                  onFocus={() => setFocused("handle")}
-                  onBlur={() => setFocused("")}
-                />
               </div>
 
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
