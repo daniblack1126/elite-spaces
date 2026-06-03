@@ -1,5 +1,5 @@
 // ── UPDATE THESE TWO LINES EACH MONTH ─────────────────────────────────────────
-export const CALENDAR_MONTH = 4   // 0-indexed: 0 = Jan, 4 = May, 5 = June, etc.
+export const CALENDAR_MONTH = 5   // 0-indexed: 0 = Jan, 4 = May, 5 = June, etc.
 export const CALENDAR_YEAR  = 2026
 // ──────────────────────────────────────────────────────────────────────────────
 
