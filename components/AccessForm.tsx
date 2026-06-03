@@ -86,12 +86,13 @@ export default function AccessForm() {
             Be the one who<br />always knows.
           </h2>
           <p style={{ fontFamily: fonts.ui, fontSize: fontSizes.body, fontWeight: 300, lineHeight: 1.9, color: colors.body, letterSpacing: letterSpacing.body, marginBottom: 28 }}>
-            Join 2,400+ New Yorkers who never miss the events that matter. Apply in 30 seconds — we review each request personally.
+            Join 50+ New Yorkers who never miss the events that matter. Apply in 30 seconds — we review each request personally.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
             {[
               "Sourced from 100+ publications monthly",
-              "Updated the first Sunday of each month",
+              "Updated with new events weekly",
+              "New calendar the first Sunday of each month",
               "No advertising. No spam. Ever.",
             ].map((line, i) => (
               <div key={i} style={{ fontFamily: fonts.ui, fontSize: fontSizes.label, fontWeight: 300, letterSpacing: letterSpacing.chip, textTransform: "uppercase", color: colors.hint, display: "flex", alignItems: "center", gap: 8 }}>
@@ -100,7 +101,7 @@ export default function AccessForm() {
             ))}
           </div>
           <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.note, fontWeight: 400, letterSpacing: letterSpacing.heroNote, color: colors.ink, padding: "10px 14px", background: colors.cream, display: "inline-block" }}>
-            Only 50 spots remaining this month
+            Only 14 spots remaining this month
           </div>
         </motion.div>
 
