@@ -121,7 +121,12 @@ export default function CalendarView({ session, eventCount }: Props) {
   const [isMobile,     setIsMobile]     = useState(false)
   const [allEvents,    setAllEvents]    = useState<Event[]>([])
   const [eventsLoaded, setEventsLoaded] = useState(false)
-  const greeting = getGreeting()
+  const [greeting,     setGreeting]     = useState("")
+
+  // Set greeting on client only to avoid hydration mismatch
+  useEffect(() => {
+    setGreeting(getGreeting())
+  }, [])
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= MOBILE_BP)
