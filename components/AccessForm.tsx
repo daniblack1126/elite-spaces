@@ -19,6 +19,7 @@ export default function AccessForm() {
   const [firstName,     setFirstName]     = useState("")
   const [email,         setEmail]         = useState("")
   const [source,        setSource]        = useState("")
+  const [handle,        setHandle]        = useState("")
   const [focused,       setFocused]       = useState("")
   const [loading,       setLoading]       = useState(false)
 
@@ -37,7 +38,7 @@ export default function AccessForm() {
         method:  "POST",
         mode:    "no-cors",
         headers: { "Content-Type": "text/plain" },
-        body:    JSON.stringify({ firstName, lastName: "", email, source, handle: "" }),
+        body:    JSON.stringify({ firstName, lastName: "", email, source, handle }),
       })
     } catch (err) {
       console.error("Apply error:", err)
@@ -141,6 +142,18 @@ export default function AccessForm() {
                   <option value="instagram">Instagram</option>
                   <option value="other">Other</option>
                 </select>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <label style={labelStyle as React.CSSProperties}>Your Instagram or TikTok handle</label>
+                <input
+                  style={inputStyle("handle")}
+                  type="text"
+                  placeholder="@yourhandle"
+                  value={handle}
+                  onChange={(e) => setHandle(e.target.value)}
+                  onFocus={() => setFocused("handle")}
+                  onBlur={() => setFocused("")}
+                />
               </div>
 
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>

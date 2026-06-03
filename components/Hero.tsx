@@ -70,7 +70,7 @@ export default function Hero({ session, onSessionChange }: Props) {
   return (
     <section
       id={anchors.hero}
-      style={{ background: colors.cream, padding: isMobile ? "80px 24px 60px" : "120px 60px 100px", textAlign: "center", fontFamily: fonts.ui }}
+      style={{ background: colors.cream, padding: isMobile ? "72px 24px 48px" : "100px 60px 64px", textAlign: "center", fontFamily: fonts.ui }}
     >
       {verifying && (
         <div style={{ position: "fixed", inset: 0, background: colors.cream, zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fonts.ui, fontSize: fontSizes.label, letterSpacing: letterSpacing.button, textTransform: "uppercase", color: colors.muted }}>

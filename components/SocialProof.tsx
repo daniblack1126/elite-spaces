@@ -38,7 +38,7 @@ export default function SocialProof() {
       ref={ref}
       style={{
         background: colors.cream,
-        padding: isMobile ? "48px 24px 60px" : "56px 60px 72px",
+        padding: isMobile ? "36px 24px 40px" : "40px 60px 48px",
         borderTop: `0.5px solid ${colors.rule}`,
       }}
     >
@@ -58,7 +58,7 @@ export default function SocialProof() {
             textTransform: "uppercase",
             color: colors.muted,
             textAlign: "center",
-            marginBottom: 32,
+            marginBottom: 24,
           }}
         >
           A glimpse at what members discovered last month
@@ -134,7 +134,7 @@ export default function SocialProof() {
             letterSpacing: letterSpacing.heroNote,
             color: colors.hint,
             textAlign: "center",
-            marginTop: 28,
+            marginTop: 20,
           }}
         >
           &quot;I&apos;ve lived here 8 years and still discover something new every month.&quot; — Sarah K.
