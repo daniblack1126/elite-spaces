@@ -33,7 +33,7 @@ export const fontSizes = {
   paywallHead: 28,
   calTitle:    32,
   accessHead:  34,
-  heroHead:    58,
+  heroHead:    48,
 }
 
 export const letterSpacing = {
@@ -54,7 +54,7 @@ export const letterSpacing = {
 export const spacing = {
   pagePadding:       "0 60px",
   pagePaddingMobile: "0 24px",
-  sectionY:          "80px",
+  sectionY:          "40px",
   accessSectionY:    "88px",
   paywallSection:    "0 60px 100px",
   footerPadding:     "36px 60px",
