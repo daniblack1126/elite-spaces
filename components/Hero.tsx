@@ -139,7 +139,7 @@ export default function Hero({ session, onSessionChange }: Props) {
                 Request Access
               </a>
               <div style={{ fontFamily: fonts.ui, fontSize: fontSizes.note, fontWeight: 300, letterSpacing: letterSpacing.heroNote, color: colors.hint, marginTop: 12 }}>
-                Only 50 spots remaining this month
+                Only 14 spots remaining this month
               </div>
             </>
           )}
