@@ -113,7 +113,7 @@ export default function Hero({ session, onSessionChange }: Props) {
           variants={item}
           style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: fontSizes.description, fontWeight: 300, lineHeight: 1.7, color: colors.body, maxWidth: 520, margin: "0 auto 32px" }}
         >
-          Everyone asks how you always know about the best events. This is how. Galas, cultural openings, industry moments, and the hidden gems the city keeps to itself — curated monthly, delivered personally.
+          Everyone asks how you always know about the best events. This is how. Galas, cultural openings, industry moments, and the hidden gems the city keeps to itself. Curated monthly, delivered personally.
         </motion.p>
 
         <motion.div variants={item}>
