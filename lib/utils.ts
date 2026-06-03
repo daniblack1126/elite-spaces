@@ -10,3 +10,14 @@ export function getGreeting() {
   if (h < 18) return "Good afternoon"
   return "Good evening"
 }
+
+export const getCurrentMonthYear = (): string => {
+  const now = new Date();
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const month = monthNames[now.getMonth()];
+  const year = now.getFullYear();
+  return `${month} ${year}`;
+};
