@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { colors, fonts, fontSizes, letterSpacing, trans, anchors, btnDark, MOBILE_BP } from "@/lib/tokens"
-import { scrollTo } from "@/lib/utils"
 import type { Session } from "@/lib/types"
 import { scrollTo, getCurrentMonthYear } from "@/lib/utils"
 
