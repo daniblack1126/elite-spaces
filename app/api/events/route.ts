@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 
+export const dynamic = "force-dynamic"
+
 const WEBHOOK_URL = process.env.APPS_SCRIPT_URL ?? ""
 
 export async function GET() {
@@ -8,7 +10,7 @@ export async function GET() {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify({ action: "getEvents" }),
-      next:    { revalidate: 3600 }, // cache for 1 hour
+      cache:   "no-store",
     })
 
     if (!res.ok) {
