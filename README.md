@@ -1,151 +1,65 @@
 # Elite Spaces NYC
 
-A curated monthly events calendar for New York City. Members apply for access, get manually approved, pay via Stripe, then log in with a magic link to see the full calendar.
+A curated monthly events calendar for New York City. Members apply, get approved by hand, pay through Stripe, then sign in with an emailed link to see the full calendar.
 
-Built with **Next.js 14 (App Router)**, **Google Sheets**, **Stripe**, and **Nodemailer**.
+## How the pieces connect
 
----
+```
+Visitor's browser
+   │
+   ▼
+elitespaces.nyc  (this repo, Next.js on Vercel)
+   │  /api/apply   /api/login   /api/verify   /api/events   /api/cancel
+   │  /api/stripe  ◄── Stripe webhook (signature checked here)
+   ▼
+Google Apps Script web app  (apps-script/Code.gs)
+   │  sends every email (GmailApp), runs the weekly events pipeline,
+   │  drip emails and monthly publish on time-based triggers
+   ▼
+Google Sheets
+   ├─ Members tab   (one row per applicant / member)
+   └─ Events sheet  (one row per event; Status: Pending Review → Approved → Published)
+```
 
-## Architecture
+The website never touches the sheets directly. Everything goes through the Apps Script, using the URL in `APPS_SCRIPT_URL`.
 
-| Layer | Technology |
+## Vercel environment variables
+
+| Name | What it is |
 |---|---|
-| Frontend | Next.js 14 App Router, Framer Motion, inline styles (design-token system) |
-| Auth | Magic-link email → hash-based URL → httpOnly session cookie |
-| Database | Google Sheets (one row per member) |
-| Payments | Stripe Payment Links + webhook |
-| Email | Nodemailer (any SMTP provider) |
-| Hosting | Vercel |
+| `APPS_SCRIPT_URL` | The Apps Script web app URL (ends in `/exec`) |
+| `APPS_SCRIPT_SECRET` | Long random string. Same value as the `SITE_SECRET` Script Property |
+| `SESSION_SECRET` | Long random string used to sign the login cookie |
+| `STRIPE_SECRET_KEY` | Stripe secret key (also used to stop renewals when a member cancels) |
+| `STRIPE_WEBHOOK_SECRET` | Signing secret of the Stripe webhook that points at `https://elitespaces.nyc/api/stripe` |
+| `STRIPE_MONTHLY_LINK` / `STRIPE_FOUNDING_LINK` | Stripe Payment Link URLs |
 
----
+## Apps Script setup
 
-## Setup
+1. Paste `apps-script/Code.gs` over everything in the Apps Script editor and save.
+2. Project Settings → Script Properties:
+   - `ANTHROPIC_API_KEY`, `BRAVE_API_KEY` for the events pipeline
+   - `SITE_SECRET` = the same value as `APPS_SCRIPT_SECRET` in Vercel
+   - `BYPASS_SECRET` = a new private value, only if you use free-access links
+3. Deploy → Manage deployments → edit the existing web app → New version. Editing the existing deployment keeps the URL the same.
+4. Triggers: `onEdit` (from spreadsheet, on edit), `runEventsPipeline` (weekly), `runApprovedNotPaidDrip` (daily), `runMonthlyPublish` (monthly), `sendWeeklyEventDigest` (weekly). Have only one trigger per function.
 
-### 1. Clone and install
+Cleanup functions you can run by hand from the editor: `tidyEventsSheet`, `reportDuplicates` (dry run, emails a list), `mergeDuplicates`, `archivePastEvents`.
 
-```bash
-git clone <repo>
-cd elite-spaces-nyc
-npm install
-```
+## Member flow
 
-### 2. Google Service Account
+1. Access form → `/api/apply` → Apps Script adds a Members row (`pending`) and sends the confirmation and admin emails.
+2. You set Application Status to `approved` → the `onEdit` trigger sets `payment_pending` and emails the payment links.
+3. Member pays → Stripe → `/api/stripe` → Apps Script sets `active` and sends the welcome email.
+4. Member signs in → `/api/login` emails a 15-minute link → `/api/verify` checks it and sets a signed session cookie.
+5. Member cancels → `/api/cancel` stops the Stripe renewal and marks the row `cancelling`. When the paid period ends, Stripe sends `customer.subscription.deleted` and the row becomes `cancelled`.
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/) → Create project (or reuse one).
-2. Enable **Google Sheets API**.
-3. Create a **Service Account** (IAM & Admin → Service Accounts → Create).
-4. Create a JSON key for that service account and download it.
-5. Open your Google Sheet → Share → paste the service account email with **Editor** access.
-6. Copy the values into your env file:
-   - `GOOGLE_SHEET_ID` — from the sheet URL: `https://docs.google.com/spreadsheets/d/<ID>/edit`
-   - `GOOGLE_SERVICE_ACCOUNT_EMAIL` — the `client_email` field in the JSON key
-   - `GOOGLE_PRIVATE_KEY` — the `private_key` field (keep the `\n` escapes; Vercel handles them correctly)
-
-### 3. Google Sheet column structure
-
-The sheet must have these columns in order (row 1 = headers, data starts row 2):
-
-| Col | Header | Values |
-|---|---|---|
-| A | Timestamp | ISO datetime |
-| B | First Name | string |
-| C | Last Name | string |
-| D | Email | string |
-| E | Source | tiktok / friend / google / instagram / other |
-| F | Status | pending / approved / payment_pending / monthly_member / founding_member / cancelling / cancelled / payment_failed |
-| G | Stripe Customer ID | string |
-| H | Stripe Subscription ID | string |
-| I | Plan | monthly / founding |
-| J | Login Token | string (cleared after use) |
-| K | Token Expiry | ISO datetime (cleared after use) |
-| L | Applied At | ISO datetime |
-| M | Approved At | ISO datetime |
-| N | Payment Date | ISO datetime |
-| O | Next Billing Date | ISO datetime |
-| P | Cancelled At | ISO datetime |
-| Q | Notes | string |
-
-### 4. SMTP (email sending)
-
-Any SMTP provider works. Recommended options:
-- **Resend** — `smtp.resend.com`, port 465, your Resend API key as the password
-- **Postmark** — `smtp.postmarkapp.com`, port 587
-- **Gmail** — only for testing; use an App Password
-
-Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`.
-
-### 5. Stripe
-
-1. Create two **Payment Links** in the Stripe Dashboard — one for Monthly ($12/mo) and one for Founding ($99/yr).
-2. Copy each link URL into `STRIPE_MONTHLY_LINK` and `STRIPE_FOUNDING_LINK`.
-3. Set up a **Webhook** pointing to `https://your-domain.vercel.app/api/stripe`:
-   - Events to listen for: `checkout.session.completed`, `customer.subscription.deleted`, `invoice.payment_failed`
-4. Copy the webhook signing secret into `STRIPE_WEBHOOK_SECRET`.
-5. Copy your Stripe secret key into `STRIPE_SECRET_KEY`.
-
-### 6. Environment variables
-
-Copy `.env.local.example` to `.env.local` and fill in all values:
-
-```bash
-cp .env.local.example .env.local
-```
-
-Then add the same variables in the Vercel project dashboard (Settings → Environment Variables).
-
-### 7. Deploy to Vercel
-
-```bash
-npx vercel
-```
-
-Or connect the GitHub repo in the Vercel dashboard. The `vercel.json` file handles the build config automatically.
-
----
-
-## Member approval workflow
-
-1. A visitor fills in the **Request Access** form → row added to sheet with status `pending`, confirmation email sent to applicant, notification email sent to admin.
-2. Admin opens the sheet, reviews the row, sets status to `approved`.
-3. **Admin manually sends the payment email** by calling the approval function (see below), or you can set up an on-edit trigger in Google Sheets/Apps Script that watches column F.
-4. Member receives an email with Monthly / Founding payment links.
-5. Member pays → Stripe fires `checkout.session.completed` → webhook updates sheet to `monthly_member` or `founding_member`, sends welcome email.
-6. Member returns to the site, enters email in the **Member sign in** section, receives magic link, clicks it, and gets access.
-
-> **Note:** To automate step 3 without Apps Script, you can manually send the payment email by updating the status and calling the `lib/email.ts` `paymentEmail()` function from a script or admin page.
-
----
-
-## Bypass URL (manual access without payment)
-
-Grant access to yourself or guests without requiring payment:
-
-```
-https://your-domain.vercel.app/api/bypass?email=EMAIL&plan=monthly&secret=elitespaces2026
-```
-
-- `email` — must already have a row in the sheet (they applied first)
-- `plan` — `monthly` or `founding`
-- `secret` — value of `BYPASS_SECRET` env var (default: `elitespaces2026`)
-
-The person will receive a welcome email and their status will be updated in the sheet.
-
----
-
-## Magic link flow
-
-1. Member enters email in **Member sign in** section.
-2. `/api/login` generates a token, stores it in the sheet with a 15-minute expiry, sends an email with a link like: `https://your-domain.vercel.app#token=TOKEN&email=EMAIL`
-3. Member clicks the link → page loads → Hero component reads the hash, calls `/api/verify`.
-4. `/api/verify` validates the token, clears it from the sheet, sets an httpOnly cookie.
-5. Page reloads with the session cookie → server component reads cookie → authenticated view shown.
-
----
+Free access: `https://script.google.com/macros/s/<id>/exec?action=bypass&email=EMAIL&plan=monthly&secret=<BYPASS_SECRET>` (the person must have applied first).
 
 ## Local development
 
 ```bash
+npm install
+cp .env.local.example .env.local   # fill in values
 npm run dev
 ```
-
-Visit `http://localhost:3000`. Set `NEXT_PUBLIC_SITE_URL=http://localhost:3000` in `.env.local` so magic links point to localhost.

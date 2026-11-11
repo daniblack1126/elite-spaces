@@ -1,15 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import type { Session } from "@/lib/types"
-
-const APPS_SCRIPT_URL = process.env.APPS_SCRIPT_URL ?? ""
-
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure:   process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  maxAge:   60 * 60 * 24 * 30, // 30 days
-  path:     "/",
-}
+import { appsScriptGet } from "@/lib/appsScript"
+import { encodeSession, SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from "@/lib/session"
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token")
@@ -20,11 +12,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const res  = await fetch(
-      `${APPS_SCRIPT_URL}?action=verify&token=${token}&email=${encodeURIComponent(email)}`,
-      { redirect: "follow" },
-    )
-    const data = await res.json()
+    const data = await appsScriptGet<Record<string, string>>({ action: "verify", token, email })
 
     if (data.result !== "success") {
       return NextResponse.json(data)
@@ -38,7 +26,7 @@ export async function GET(req: NextRequest) {
     }
 
     const response = NextResponse.json({ result: "success", ...session })
-    response.cookies.set("es_session", JSON.stringify(session), COOKIE_OPTIONS)
+    response.cookies.set(SESSION_COOKIE, encodeSession(session), SESSION_COOKIE_OPTIONS)
     return response
   } catch (err) {
     console.error("Verify error:", err)
