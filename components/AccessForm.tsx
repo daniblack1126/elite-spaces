@@ -26,20 +26,18 @@ export default function AccessForm() {
   const ref     = useRef(null)
   const inView  = useInView(ref, { once: true, margin: "-15%" })
 
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzFguDTB_NRpzDyUJWNxLqvfm0r-fMw0613ATL3nl6tYxe6I07Ut1RseHpdDMDPcJAG/exec"
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     const name = firstName.trim()
     setSubmittedName(name || "you")
     try {
-      await fetch(APPS_SCRIPT_URL, {
+      const res = await fetch("/api/apply", {
         method:  "POST",
-        mode:    "no-cors",
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ firstName, lastName: "", email, source, handle }),
       })
+      if (!res.ok) console.error("Apply error:", await res.text())
     } catch (err) {
       console.error("Apply error:", err)
     }

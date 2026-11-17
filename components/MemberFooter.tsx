@@ -27,7 +27,7 @@ export default function MemberFooter({ session, onSignOut }: Props) {
       await fetch("/api/cancel", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ email: session.email }),
+        body:    JSON.stringify({}),
       })
     } catch {
       // best-effort

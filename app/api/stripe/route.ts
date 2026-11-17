@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
+import { appsScriptPost } from "@/lib/appsScript"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-04-10",
 })
 
-const APPS_SCRIPT_URL = process.env.APPS_SCRIPT_URL ?? ""
 
 function planFromPaymentLink(paymentLinkId: string | null): "founding" | "monthly" {
   const foundingId = (process.env.STRIPE_FOUNDING_LINK ?? "").split("/").pop()
@@ -14,13 +14,15 @@ function planFromPaymentLink(paymentLinkId: string | null): "founding" | "monthl
     : "monthly"
 }
 
-async function callAppsScript(body: object) {
-  await fetch(APPS_SCRIPT_URL, {
-    method:   "POST",
-    headers:  { "Content-Type": "text/plain" },
-    body:     JSON.stringify(body),
-    redirect: "follow",
-  })
+// Stripe events are verified here (signature check), then passed to the Apps Script,
+// which updates the Members sheet and sends the welcome / payment-failed emails.
+async function callAppsScript(body: Record<string, unknown>) {
+  try {
+    const res = await appsScriptPost(body)
+    if ((res as { result?: string }).result !== "success") console.error("Apps Script did not apply Stripe event:", body, res)
+  } catch (err) {
+    console.error("Apps Script call failed for Stripe event:", body, err)
+  }
 }
 
 export async function POST(req: NextRequest) {
